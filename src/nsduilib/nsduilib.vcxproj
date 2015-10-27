@@ -90,7 +90,7 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">
-    <OutDir>.\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
     <IntDir>.\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
@@ -258,11 +258,11 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>./$(Configuration)/$(ProjectName)_u.dll</OutputFile>
+      <OutputFile>$(SolutionDir)/$(Configuration)/$(ProjectName)_u.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ProgramDatabaseFile>.\Release_u/nsTBCIASkinEngine.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(SolutionDir)\$(Configuration)\$(ProjectName)_u.pdb</ProgramDatabaseFile>
       <BaseAddress>0x11000000</BaseAddress>
-      <ImportLibrary>../bin/nsTBCIASkinEngine_u.lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\$(Configuration)\$(projectName)_u.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
@@ -272,7 +272,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="nsTBCIASkinEngine.cpp" />
+    <ClCompile Include="nsduilib.cpp" />
     <ClCompile Include="pluginapi.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -329,7 +329,7 @@
   <ItemGroup>
     <ClInclude Include="api.h" />
     <ClInclude Include="MsgDef.h" />
-    <ClInclude Include="nsTBCIASkinEngine.h" />
+    <ClInclude Include="nsduilib.h" />
     <ClInclude Include="pluginapi.h" />
     <ClInclude Include="SkinEngine.h" />
     <ClInclude Include="StdAfx.h" />

@@ -1,4 +1,4 @@
-#include "nsTBCIASkinEngine.h"
+#include "nsduilib.h"
 #include "SkinEngine.h"
 #include <map>
 #include <shlobj.h>
