@@ -204,16 +204,16 @@ int NSISCALL myatoi_or(const char *s)
 
 int NSISCALL popint()
 {
-  TCHAR buf[128];
+  char buf[128];
   if (popstringn(buf,sizeof(buf)))
     return 0;
 
-  return _tstoi(buf);
+  return atoi(buf);
 }
 
 int NSISCALL popint_or()
 {
-  TCHAR buf[128];
+  char buf[128];
   if (popstringn(buf,sizeof(buf)))
     return 0;
 

@@ -300,7 +300,7 @@ void CButtonUI::DoEvent(TEventUI& event)
         return;
     }
     if( event.Type == UIEVENT_SETCURSOR ) {
-        ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+        ::SetCursor(::LoadCursor(NULL, IDC_HAND));
         return;
     }
     CLabelUI::DoEvent(event);
@@ -778,7 +778,7 @@ void CTextUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_SETCURSOR ) {
         for( int i = 0; i < m_nLinks; i++ ) {
             if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+                ::SetCursor(::LoadCursor(NULL,IDC_HAND));
                 return;
             }
         }
@@ -1177,7 +1177,7 @@ void CSliderUI::DoEvent(TEventUI& event)
     {
         RECT rcThumb = GetThumbRect();
         if( IsEnabled() && ::PtInRect(&rcThumb, event.ptMouse) ) {
-            ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+            ::SetCursor(::LoadCursor(NULL,IDC_HAND));
             return;
         }
     }
@@ -1432,7 +1432,7 @@ void CEditUI::DoEvent(TEventUI& event)
 
     if( event.Type == UIEVENT_SETCURSOR && IsEnabled() )
     {
-        ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_IBEAM)));
+        ::SetCursor(::LoadCursor(NULL,IDC_IBEAM));
         return;
     }
     if( event.Type == UIEVENT_WINDOWSIZE )
