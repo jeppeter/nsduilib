@@ -42,7 +42,7 @@ typedef enum EVENTTYPE_UI
     UIEVENT_NOTIFY,
     UIEVENT_COMMAND,
     UIEVENT__LAST,
-};
+}EVENTTYPE_UI_t;
 
 /////////////////////////////////////////////////////////////////////////////////////
 //

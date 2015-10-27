@@ -255,88 +255,100 @@ CTxtWinHost::~CTxtWinHost()
 
 BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
 {
-    IUnknown *pUnk;
-    HRESULT hr;
+	IUnknown *pUnk;
+	HRESULT hr;
 
-    m_re = re;
-    // Initialize Reference count
-    cRefs = 1;
+	m_re = re;
+	// Initialize Reference count
+	cRefs = 1;
 
-    // Create and cache CHARFORMAT for this control
-    if(FAILED(InitDefaultCharFormat(re, &cf, NULL)))
-        goto err;
+	// Create and cache CHARFORMAT for this control
+	if (FAILED(InitDefaultCharFormat(re, &cf, NULL)))
+		goto err;
 
-    // Create and cache PARAFORMAT for this control
-    if(FAILED(InitDefaultParaFormat(re, &pf)))
-        goto err;
+	// Create and cache PARAFORMAT for this control
+	if (FAILED(InitDefaultParaFormat(re, &pf)))
+		goto err;
 
-    // edit controls created without a window are multiline by default
-    // so that paragraph formats can be
-    dwStyle = ES_MULTILINE;
+	// edit controls created without a window are multiline by default
+	// so that paragraph formats can be
+	dwStyle = ES_MULTILINE;
 
-    // edit controls are rich by default
-    fRich = re->IsRich();
+	// edit controls are rich by default
+	fRich = re->IsRich();
 
-    cchTextMost = re->GetLimitText();
+	cchTextMost = re->GetLimitText();
 
-    if (pcs )
-    {
-        dwStyle = pcs->style;
+	if (pcs)
+	{
+		dwStyle = pcs->style;
 
-        if ( !(dwStyle & (ES_AUTOHSCROLL | WS_HSCROLL)) )
-        {
-            fWordWrap = TRUE;
-        }
-    }
+		if (!(dwStyle & (ES_AUTOHSCROLL | WS_HSCROLL)))
+		{
+			fWordWrap = TRUE;
+		}
+	}
 
-    if( !(dwStyle & ES_LEFT) )
-    {
-        if(dwStyle & ES_CENTER)
-            pf.wAlignment = PFA_CENTER;
-        else if(dwStyle & ES_RIGHT)
-            pf.wAlignment = PFA_RIGHT;
-    }
+	if (!(dwStyle & ES_LEFT))
+	{
+		if (dwStyle & ES_CENTER)
+			pf.wAlignment = PFA_CENTER;
+		else if (dwStyle & ES_RIGHT)
+			pf.wAlignment = PFA_RIGHT;
+	}
 
-    fInplaceActive = TRUE;
+	fInplaceActive = TRUE;
 
-    // Create Text Services component
-    if(FAILED(CreateTextServices(NULL, this, &pUnk)))
-        goto err;
+	// Create Text Services component
+	//if(FAILED(CreateTextServices(NULL, this, &pUnk)))
+	//    goto err;
 
-    hr = pUnk->QueryInterface(IID_ITextServices,(void **)&pserv);
+	PCreateTextServices TextServicesProc;
+	HMODULE hmod = LoadLibrary(_T("msftedit.dll"));
+	if (hmod)
+	{
+		TextServicesProc = (PCreateTextServices)GetProcAddress(hmod, "CreateTextServices");
+	}
 
-    // Whether the previous call succeeded or failed we are done
-    // with the private interface.
-    pUnk->Release();
+	if (TextServicesProc)
+	{
+		HRESULT hr = TextServicesProc(NULL, this, &pUnk);
+	}
 
-    if(FAILED(hr))
-    {
-        goto err;
-    }
+	hr = pUnk->QueryInterface(IID_ITextServices, (void **)&pserv);
 
-    // Set window text
-    if(pcs && pcs->lpszName)
-    {
+	// Whether the previous call succeeded or failed we are done
+	// with the private interface.
+	pUnk->Release();
+
+	if (FAILED(hr))
+	{
+		goto err;
+	}
+
+	// Set window text
+	if (pcs && pcs->lpszName)
+	{
 #ifdef _UNICODE		
-        if(FAILED(pserv->TxSetText((TCHAR *)pcs->lpszName)))
-            goto err;
+		if (FAILED(pserv->TxSetText((TCHAR *)pcs->lpszName)))
+			goto err;
 #else
-        size_t iLen = _tcslen(pcs->lpszName);
-        LPWSTR lpText = new WCHAR[iLen + 1];
-        ::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
-        ::MultiByteToWideChar(CP_ACP, 0, pcs->lpszName, -1, (LPWSTR)lpText, iLen) ;
-        if(FAILED(pserv->TxSetText((LPWSTR)lpText))) {
-            delete[] lpText;
-            goto err;
-        }
-        delete[] lpText;
+		size_t iLen = _tcslen(pcs->lpszName);
+		LPWSTR lpText = new WCHAR[iLen + 1];
+		::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
+		::MultiByteToWideChar(CP_ACP, 0, pcs->lpszName, -1, (LPWSTR)lpText, iLen);
+		if (FAILED(pserv->TxSetText((LPWSTR)lpText))) {
+			delete[] lpText;
+			goto err;
+		}
+		delete[] lpText;
 #endif
-    }
+	}
 
-    return TRUE;
+	return TRUE;
 
 err:
-    return FALSE;
+	return FALSE;
 }
 
 /////////////////////////////////  IUnknown ////////////////////////////////

@@ -2,12 +2,25 @@
 #include <tchar.h>
 #include "pluginapi.h"
 
+#pragma warning(disable:4996)
+
 unsigned int g_stringsize;
 stack_t **g_stacktop;
 char *g_variables;
 
 // utility functions (not required but often useful)
-
+#ifdef _UNICODE
+int NSISCALL popstring(TCHAR* str)
+{
+	stack_t *th;
+	if (!g_stacktop || !*g_stacktop) return 1;
+	th = (*g_stacktop);
+	if (str) mbstowcs(str,th->text,strlen(th->text));
+	*g_stacktop = th->next;
+	GlobalFree((HGLOBAL)th);
+	return 0;
+}
+#else
 int NSISCALL popstring(TCHAR* str)
 {
   stack_t *th;
@@ -18,6 +31,7 @@ int NSISCALL popstring(TCHAR* str)
   GlobalFree((HGLOBAL)th);
   return 0;
 }
+#endif /*_UNICODE*/
 
 int NSISCALL popstringA(char* str)
 {
@@ -30,18 +44,29 @@ int NSISCALL popstringA(char* str)
 	return 0;
 }
 
-int NSISCALL popstringn(TCHAR *str, int maxlen)
+int NSISCALL popstringn(char *str, int maxlen)
 {
   stack_t *th;
   if (!g_stacktop || !*g_stacktop) return 1;
   th=(*g_stacktop);
-  if (str) lstrcpynW(str,th->text,maxlen?maxlen:g_stringsize);
+  if (str) strncpy(str,th->text,maxlen?maxlen:g_stringsize);
   *g_stacktop = th->next;
   GlobalFree((HGLOBAL)th);
   return 0;
 }
 
-void NSISCALL pushstring(const TCHAR *str)
+#ifdef _UNICODE
+void NSISCALL pushstring(TCHAR *str)
+{
+	stack_t *th;
+	if (!g_stacktop) return;
+	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);
+	wcstombs(th->text, str, g_stringsize);
+	th->next = *g_stacktop;
+	*g_stacktop = th;
+}
+#else
+void NSISCALL pushstring(TCHAR *str)
 {
   stack_t *th;
   if (!g_stacktop) return;
@@ -50,6 +75,7 @@ void NSISCALL pushstring(const TCHAR *str)
   th->next=*g_stacktop;
   *g_stacktop=th;
 }
+#endif
 
 char * NSISCALL getuservariable(const int varnum)
 {

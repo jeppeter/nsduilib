@@ -351,7 +351,7 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 	if (SHGetPathFromIDList(resultPIDL, result))
 	{
 		if( result[_tcslen(result)-1] == _T('\\') )
-			result[_tcslen(result)-1] = _T('');
+			result[_tcslen(result)-1] = _T('\0');
 		pushstring(result);
 	}
 	else
