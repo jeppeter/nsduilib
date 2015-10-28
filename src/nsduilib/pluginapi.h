@@ -55,8 +55,9 @@ extern unsigned int g_stringsize;
 extern stack_t **g_stacktop;
 extern char *g_variables;
 
-int NSISCALL popstring(TCHAR *str); // 0 on success, 1 on empty stack
-int NSISCALL popstringA(char* str);
+int NSISCALL popstring_debug(TCHAR *str,int maxsize); // 0 on success, 1 on empty stack
+int NSISCALL popstring(TCHAR *str,int maxsize); // 0 on success, 1 on empty stack
+int NSISCALL popstringA(char* str,int maxsize);
 int NSISCALL popstringn(char *str, int maxlen); // with length limit, pass 0 for g_stringsize
 int NSISCALL popint(); // pops an integer
 int NSISCALL popint_or(); // with support for or'ing (2|4|8)

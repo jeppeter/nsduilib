@@ -48,9 +48,9 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		ZeroMemory(skinLayoutFileName, MAX_PATH*sizeof(TCHAR));
 		ZeroMemory(installPageTabName, MAX_PATH*sizeof(TCHAR));
 
-		popstring(skinPath);  // 皮肤路径
-		popstring(skinLayoutFileName); //皮肤文件
-		popstring( installPageTabName ); // 安装页面tab的名字
+		popstring(skinPath,sizeof(skinPath));  // 皮肤路径
+		popstring(skinLayoutFileName,sizeof(skinLayoutFileName)); //皮肤文件
+		popstring( installPageTabName,sizeof(installPageTabName)); // 安装页面tab的名字
 
 		DuiLib::CPaintManagerUI::SetInstance(g_hInstance);
 		DuiLib::CPaintManagerUI::SetResourcePath( skinPath);
@@ -75,7 +75,7 @@ void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **st
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 
-	popstring( controlName );
+	popstring( controlName,sizeof(controlName));
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pControl == NULL )
 		pushint( - 1 );
@@ -89,8 +89,8 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 	TCHAR fileName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(fileName, MAX_PATH*sizeof(TCHAR));
-	popstring( controlName );
-	popstring( fileName );
+	popstring( controlName,sizeof(controlName) );
+	popstring( fileName,sizeof(fileName));
 	CDuiString finalFileName = g_skinPath + _T("\\") + fileName;	
 	CRichEditUI* pRichEditControl = static_cast<CRichEditUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pRichEditControl == NULL )
@@ -148,7 +148,7 @@ void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables,
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 
-	popstring(controlName);
+	popstring(controlName,sizeof(controlName));
 	int callbackID = popint();
 	DEBUG_INFO("\n");
 	g_pFrame->SaveToControlCallbackMap( controlName, callbackID );
@@ -164,9 +164,9 @@ void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 	ZeroMemory(controlData, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
 
-	popstring( controlName );
-	popstring( controlData );
-	popstring( dataType );
+	popstring( controlName,sizeof(controlName));
+	popstring( controlData,sizeof(controlData));
+	popstring( dataType,sizeof(dataType));
 
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pControl == NULL )
@@ -212,8 +212,8 @@ void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 	TCHAR dataType[MAX_PATH];
 	ZeroMemory(ctlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
-	popstring( ctlName );
-	popstring( dataType );
+	popstring( ctlName ,sizeof(ctlName));
+	popstring( dataType,sizeof(dataType));
 	
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( ctlName ));
 	if( pControl == NULL )
@@ -286,10 +286,10 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	ZeroMemory(wParam, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(lParam, MAX_PATH*sizeof(TCHAR));
 
-	DEBUG_INFO("to send message\n");
-	popstring( msgID );
-	popstring( wParam );
-	popstring( lParam );
+	DEBUG_INFO("to send message stringsize %d MAX_PATH %d\n",g_stringsize,MAX_PATH);
+	popstring( msgID,sizeof(msgID) );
+	popstring_debug( wParam,sizeof(wParam) );
+	popstring_debug( lParam ,sizeof(lParam));
 
 	if( _tcsicmp( msgID, _T("WM_TBCIAMIN")) == 0 )
 		::SendMessage( hwnd, WM_TBCIAMIN, (WPARAM)wParam, (LPARAM)lParam );
@@ -303,6 +303,8 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	{
 		LPCTSTR lpTitle = (LPCTSTR)wParam;
 		LPCTSTR lpText = (LPCTSTR)lParam;
+		DEBUG_BUFFER_FMT(lpTitle,_tcslen(lpTitle) + sizeof(TCHAR),"lpTitle :");
+		DEBUG_BUFFER_FMT(lpText,_tcslen(lpText) + sizeof(TCHAR),"lpText :");
 		if( IDYES == MessageBox( hwnd, lpText, lpTitle, MB_YESNO)/*TBCIAMessageBox( hwnd, lpTitle, lpText )*/)
 		{
 			pushint( 0 );
@@ -363,7 +365,7 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 	ZeroMemory(result, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(title, MAX_PATH*sizeof(TCHAR));
 
-	popstring( title );
+	popstring( title ,sizeof(title));
 	bi.hwndOwner = g_pFrame->GetHWND();
 	bi.pidlRoot = NULL;
 	bi.pszDisplayName = result;
@@ -398,15 +400,12 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	BOOL res = 0;
-	DEBUG_INFO("\n");
 	std::map<HWND, WNDPROC>::iterator iter = g_windowInfoMap.find( hwnd );
 	if( iter != g_windowInfoMap.end() )
 	{
  		if (message == WM_PAINT)
  		{
- 			DEBUG_INFO("\n");
  			ShowWindow( hwnd, SW_HIDE );
-			DEBUG_INFO("\n");
  		}
 		else if( message == LVM_SETITEMTEXT ) // TODO  安装细节显示  等找到消息再写
 		{
@@ -424,20 +423,16 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			{
 				CTabLayoutUI* pTab = NULL;
 				int currentIndex;
-				DEBUG_INFO("\n");
 				pTab = static_cast<CTabLayoutUI*>(g_pFrame->GetPaintManager().FindControl( g_installPageTabName ));
 				if( pTab == NULL )
 					return -1;
 				currentIndex = pTab->GetCurSel();
 				pTab->SelectItem( currentIndex + 1 );
-				DEBUG_INFO("\n");
 			}
  		}
  		else
  		{
- 			DEBUG_INFO("\n");
 			res = CallWindowProc( iter->second, hwnd, message, wParam, lParam);
-			DEBUG_INFO("res %d\n",res);
 		}
 	}	
 	return res;
@@ -447,7 +442,7 @@ void InstallCore( HWND hwndParent )
 {
 	TCHAR progressName[MAX_PATH];
 	ZeroMemory(progressName, MAX_PATH*sizeof(TCHAR));
-	popstring( progressName );
+	popstring( progressName ,sizeof(progressName));
 	g_tempParam = progressName;
 	// 接管page instfiles的消息
 	g_windowInfoMap[hwndParent] = (WNDPROC) SetWindowLong(hwndParent, GWL_WNDPROC, (long) TBCIAWindowProc);
@@ -488,12 +483,12 @@ void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, sta
 
 NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
-	popstring( g_messageBoxLayoutFileName );
+	popstring( g_messageBoxLayoutFileName,sizeof(g_messageBoxLayoutFileName));
 
-	popstring( g_messageBoxTitleControlName );
-	popstring( g_messageBoxTextControlName );
+	popstring( g_messageBoxTitleControlName,sizeof(g_messageBoxTitleControlName));
+	popstring( g_messageBoxTextControlName,sizeof(g_messageBoxTextControlName));
 
-	popstring( g_messageBoxCloseBtnControlName );
-	popstring( g_messageBoxYESBtnControlName );
-	popstring( g_messageBoxNOBtnControlName );
+	popstring( g_messageBoxCloseBtnControlName,sizeof(g_messageBoxCloseBtnControlName));
+	popstring( g_messageBoxYESBtnControlName,sizeof(g_messageBoxYESBtnControlName));
+	popstring( g_messageBoxNOBtnControlName,sizeof(g_messageBoxNOBtnControlName));
 }

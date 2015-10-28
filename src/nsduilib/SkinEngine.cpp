@@ -17,18 +17,11 @@ namespace DuiLib {
 	{
 		this->m_pcodevecs = new std::vector<int>();
 		this->m_pnamevecs = new std::vector<CDuiString>();
-		DEBUG_INFO("this 0x%p\n",this);
-		DEBUG_INFO("codevecs 0x%p namevecs 0x%p\n",this->m_pcodevecs,this->m_pnamevecs);
-		DEBUG_INFO("size %d %d\n",this->m_pcodevecs->size(),this->m_pnamevecs->size());
 	}
 	void CSkinEngine::Notify(TNotifyUI& msg)
 	{
-		DEBUG_INFO("pSender 0x%p this 0x%p\n",msg.pSender,this);
 		CDuiString name = msg.pSender->GetName();
-		DEBUG_INFO("after get name\n");
 		int i=0 ,findidx=-1;
-		DEBUG_INFO("namevec 0x%p \n",this->m_pnamevecs);
-		DEBUG_INFO("size %d\n",this->m_pnamevecs->size());
 		for (i=0;i< (int) this->m_pnamevecs->size();i++)
 		{
 			if (name == this->m_pnamevecs->at(i))
@@ -37,29 +30,21 @@ namespace DuiLib {
 				break;
 			}
 		}
-		DEBUG_INFO("\n");
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
 			if( findidx >= 0){
-				DEBUG_INFO("\n");
 				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
-				DEBUG_INFO("\n");
 			}
 		}
 		else if( _tcsicmp( msg.sType, _T("textchanged") ) == 0 ){
 			if( findidx >= 0){
-				DEBUG_INFO("\n");
 				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
-				DEBUG_INFO("\n");
 			}
 		}
-		DEBUG_INFO("\n");
 	}
 
 	void CSkinEngine::SaveToControlCallbackMap(CDuiString ctlName, int callback)
 	{
 	        //m_controlCallbackMap[ctlName] = callback;
-	        DEBUG_INFO("this 0x%p pname 0x%p pcode 0x%p callback 0x%x\n",this,
-	                   this->m_pnamevecs,this->m_pcodevecs,callback);
 	        this->m_pnamevecs->push_back(ctlName);
 	        this->m_pcodevecs->push_back(callback);
         }
@@ -67,19 +52,14 @@ namespace DuiLib {
 	LRESULT CSkinEngine::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
-		DEBUG_INFO("\n");
 		styleValue &= ~WS_CAPTION;
 		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 		m_pm.Init(m_hWnd);
-		DEBUG_INFO("\n");
 		CDialogBuilder builder;
 		CControlUI* pRoot = builder.Create( GetSkinXMLPath(), (UINT)0, NULL, &m_pm);
 		ASSERT(pRoot && "Failed to parse XML");
-		DEBUG_INFO("pRoot = 0x%p\n",pRoot);
 		m_pm.AttachDialog(pRoot);
-		DEBUG_INFO("\n");
 		m_pm.AddNotifier( this );
-		DEBUG_INFO("\n");
 		ShowWindow( FALSE );
 		return 0;
 	}
@@ -371,22 +351,15 @@ namespace DuiLib {
 	LRESULT CTBCIAMessageBox::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
-		DEBUG_INFO("\n");
 		styleValue &= ~WS_CAPTION;
 		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-		DEBUG_INFO("\n");
 		m_pm.Init(m_hWnd);
 		CDialogBuilder builder;
 		CControlUI* pRoot = builder.Create( GetSkinXMLPath(), (UINT)0, NULL, &m_pm);
-		DEBUG_INFO("\n");
 		ASSERT(pRoot && "Failed to parse XML");
-		DEBUG_INFO("pRoot = 0x%p\n",pRoot);
 		m_pm.AttachDialog(pRoot);
-		DEBUG_INFO("\n");
 		m_pm.AddNotifier( this );
-		DEBUG_INFO("\n");
 		ShowWindow( FALSE );
-		DEBUG_INFO("\n");
 		return 0;
 	}
 

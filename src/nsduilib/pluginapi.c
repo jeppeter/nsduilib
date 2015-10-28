@@ -11,19 +11,36 @@ char *g_variables;
 
 // utility functions (not required but often useful)
 #ifdef _UNICODE
-int NSISCALL popstring(TCHAR* str)
+
+int NSISCALL popstring_debug(TCHAR* str,int maxsize)
 {
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th = (*g_stacktop);
 	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
-	if (str) mbstowcs(str,th->text,strlen(th->text));
+	DEBUG_BUFFER(th->text,strlen(th->text));
+	//if (str) mbstowcs(str,th->text,strlen(th->text));
+	if (str) strncpy((char*)str,th->text,maxsize);
+	*g_stacktop = th->next;
+	GlobalFree((HGLOBAL)th);
+	return 0;
+}
+
+
+int NSISCALL popstring(TCHAR* str,int maxsize)
+{
+	stack_t *th;
+	if (!g_stacktop || !*g_stacktop) return 1;
+	th = (*g_stacktop);
+	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
+	//if (str) mbstowcs(str,th->text,strlen(th->text));
+	if (str) MultiByteToWideChar(CP_UTF8, 0, th->text,strlen(th->text), str,maxsize/sizeof(TCHAR));
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
 	return 0;
 }
 #else
-int NSISCALL popstring(TCHAR* str)
+int NSISCALL popstring(TCHAR* str,int maxsize)
 {
   stack_t *th;
   if (!g_stacktop || !*g_stacktop) return 1;
@@ -35,7 +52,7 @@ int NSISCALL popstring(TCHAR* str)
 }
 #endif /*_UNICODE*/
 
-int NSISCALL popstringA(char* str)
+int NSISCALL popstringA(char* str,int maxsize)
 {
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
@@ -64,8 +81,8 @@ void NSISCALL pushstring(TCHAR *str)
 {
 	stack_t *th;
 	if (!g_stacktop) return;
-	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);
-	wcstombs(th->text, str, g_stringsize);
+	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);	
+	WideCharToMultiByte(CP_UTF8,0,str,_tcslen(str),th->text,g_stringsize,NULL,NULL);
 	DEBUG_INFO("pushstring %s (%d)\n",th->text,strlen(th->text));
 	th->next = *g_stacktop;
 	*g_stacktop = th;

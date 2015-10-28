@@ -1,7 +1,7 @@
-ï»¿; é€‰æ‹©å‹ç¼©æ–¹å¼
+; Ñ¡ÔñÑ¹Ëõ·½Ê½
 ;SetCompressor /SOLID LZMA
 
-; å¼•å…¥çš„å¤´æ–‡ä»¶
+; ÒıÈëµÄÍ·ÎÄ¼ş
 !include "nsDialogs.nsh"
 !include "FileFunc.nsh"
 !include  MUI.nsh
@@ -14,14 +14,14 @@
 !include "format.nsh"
 
 !addplugindir "plugin"
-; å¼•å…¥çš„dll
+; ÒıÈëµÄdll
 #ReserveFile "${NSISDIR}\Plugins\system.dll"
 #ReserveFile "${NSISDIR}\Plugins\nsDialogs.dll"
 #ReserveFile "${NSISDIR}\Plugins\nsExec.dll"
 #ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 #
 
-; åç§°å®å®šä¹‰
+; Ãû³Æºê¶¨Òå
 !define PRODUCT_NAME              "360Safe"
 !define PRODUCT_VERSION           "1.0.0.1"
 !define PRODUCT_NAME_EN           "360Safe"
@@ -30,8 +30,8 @@
 !define PRODUCT_MAIN_EXE          "360Safe_ud.exe"
 !define PRODUCT_MAIN_EXE_MUTEX    "{3D3CB097-93A1-440a-954F-6D253C50CE32}"
 !define SETUP_MUTEX_NAME          "{50A3E52E-6F7F-4411-9791-63BD15BBF2C2}"
-!define MUI_ICON                  ".\setup res\install.ico"    ; å®‰è£…icon
-!define MUI_UNICON                ".\setup res\uninstall.ico"  ; å¸è½½icon
+!define MUI_ICON                  ".\setup res\install.ico"    ; °²×°icon
+!define MUI_UNICON                ".\setup res\uninstall.ico"  ; Ğ¶ÔØicon
 
 !macro MutexCheck _mutexname _outvar _handle
 System::Call 'kernel32::CreateMutexA(i 0, i 0, t "${_mutexname}" ) i.r1 ?e'
@@ -55,8 +55,8 @@ Var InstallState
 Var LocalPath
 Var 360Safetemp
 
-Name      "${PRODUCT_NAME}"              ; æç¤ºå¯¹è¯æ¡†çš„æ ‡é¢˜
-OutFile   "${PRODUCT_NAME_EN}Setup.exe"  ; è¾“å‡ºçš„å®‰è£…åŒ…å
+Name      "${PRODUCT_NAME}"              ; ÌáÊ¾¶Ô»°¿òµÄ±êÌâ
+OutFile   "${PRODUCT_NAME_EN}Setup.exe"  ; Êä³öµÄ°²×°°üÃû
 
 InstallDir "$PROGRAMFILES\360\${PRODUCT_NAME_EN}"                   ;Default installation folder
 InstallDirRegKey ${PRODUCT_ROOT_KEY} ${PRODUCT_SUB_KEY} "installDir"   ;Get installation folder from registry if available
@@ -72,7 +72,7 @@ RequestExecutionLevel admin
 
 Section "Dummy Section" SecDummy
  
-  ;å¤åˆ¶è¦å‘å¸ƒçš„å®‰è£…æ–‡ä»¶  
+  ;¸´ÖÆÒª·¢²¼µÄ°²×°ÎÄ¼ş  
   SetOutPath "$INSTDIR"
   SetOverWrite on
   File /r /x .svn   ".\360Safe\*.*"
@@ -89,7 +89,7 @@ SectionEnd
 ;Uninstaller Section
 
 Section "Uninstall"
-  ;æ‰§è¡Œuninstall.exe
+  ;Ö´ĞĞuninstall.exe
   Delete "$SMSTARTUP\${PRODUCT_NAME}.lnk"
   Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
   Delete "$QUICKLAUNCH\${PRODUCT_NAME}.lnk"
@@ -114,7 +114,7 @@ SectionEnd
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-; å®‰è£…å’Œå¸è½½é¡µé¢
+; °²×°ºÍĞ¶ÔØÒ³Ãæ
 Page         custom     360Safe
 Page         instfiles  "" InstallShow
 
@@ -125,18 +125,18 @@ UninstPage   instfiles  "" un.UninstallShow
 
 Function 360Safe
     !insertmacro DEBUG_INFO ""
-   ;åˆå§‹åŒ–çª—å£          
+   ;³õÊ¼»¯´°¿Ú          
    nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "InstallPackages.xml" "WizardTab"
    Pop $Dialog
    !insertmacro DEBUG_INFO ""
 
-   ;åˆå§‹åŒ–MessageBoxçª—å£
+   ;³õÊ¼»¯MessageBox´°¿Ú
    nsduilib::InitTBCIAMessageBox "MessageBox.xml" "TitleLab" "TextLab" "CloseBtn" "YESBtn" "NOBtn"
    Pop $MessageBoxHandle   
    !insertmacro DEBUG_INFO ""
 
-   ;å…¨å±€æŒ‰é’®ç»‘å®šå‡½æ•°
-   ;æœ€å°åŒ–æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;È«¾Ö°´Å¥°ó¶¨º¯Êı
+   ;×îĞ¡»¯°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_MinBtn"
    Pop $0
    !insertmacro DEBUG_INFO "0 ($0)"
@@ -149,7 +149,7 @@ Function 360Safe
 	nsduilib::OnControlBindNSISScript "Wizard_MinBtn" $0
   !insertmacro DEBUG_INFO ""
    ${EndIf}
-   ;å…³é—­æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;¹Ø±Õ°´Å¥°ó¶¨º¯Êı
    !insertmacro DEBUG_INFO ""
    nsduilib::FindControl "Wizard_CloseBtn"
    Pop $0
@@ -162,18 +162,18 @@ Function 360Safe
    ${EndIf}
     !insertmacro DEBUG_INFO ""
 
-   ;----------------------------ç¬¬ä¸€ä¸ªé¡µé¢-----------------------------------------------
-   ; æ˜¾ç¤ºlicence
+   ;----------------------------µÚÒ»¸öÒ³Ãæ-----------------------------------------------
+   ; ÏÔÊ¾licence
    nsduilib::FindControl "LicenceRichEdit"
    Pop $0
    ${If} $0 == "-1"
 	MessageBox MB_OK "Do not have LicenceRichEdit button"
    ${Else}
-	nsduilib::ShowLicense "LicenceRichEdit" "Licence.txt"     ;"è®¸å¯åè®®æ§ä»¶åå­—" "è®¸å¯åè®®æ–‡ä»¶åå­—"
+	nsduilib::ShowLicense "LicenceRichEdit" "Licence.txt"     ;"Ğí¿ÉĞ­Òé¿Ø¼şÃû×Ö" "Ğí¿ÉĞ­ÒéÎÄ¼şÃû×Ö"
    ${EndIf}
     !insertmacro DEBUG_INFO ""
 
-   ;ä¸‹ä¸€æ­¥æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;ÏÂÒ»²½°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_NextBtn4Page1"
    Pop $0
    ${If} $0 == "-1"
@@ -182,7 +182,7 @@ Function 360Safe
 	GetFunctionAddress $0 OnNextBtnFunc    
         nsduilib::OnControlBindNSISScript "Wizard_NextBtn4Page1"  $0
    ${EndIf}
-   ;å–æ¶ˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;È¡Ïû°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_CancelBtn4Page1"
    Pop $0
    !insertmacro DEBUG_INFO "0 ($0)"
@@ -195,8 +195,8 @@ Function 360Safe
 
   !insertmacro DEBUG_INFO ""
    
-   ;----------------------------ç¬¬äºŒä¸ªé¡µé¢-----------------------------------------------
-   ;å®‰è£…è·¯å¾„ç¼–è¾‘æ¡†è®¾å®šæ•°æ®
+   ;----------------------------µÚ¶ş¸öÒ³Ãæ-----------------------------------------------
+   ;°²×°Â·¾¶±à¼­¿òÉè¶¨Êı¾İ
    nsduilib::FindControl "Wizard_InstallPathEdit4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -216,12 +216,12 @@ Function 360Safe
 	nsduilib::SetControlData "Wizard_InstallPathEdit4Page2"  $LocalPath "text"
 	nsduilib::SetControlData "Wizard_InstallPathEdit4Page2" "false" "enable"
 	nsduilib::SetControlData "Wizard_InstallPathBtn4Page2" "false" "enable"
-	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "è¦†ç›–" "text"
+	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "¸²¸Ç" "text"
    ${EndIf}
 
   !insertmacro DEBUG_INFO ""
    
-   ;å¯ç”¨ç£ç›˜ç©ºé—´è®¾å®šæ•°æ®
+   ;¿ÉÓÃ´ÅÅÌ¿Õ¼äÉè¶¨Êı¾İ
    nsduilib::FindControl "Wizard_UsableSpaceLab4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -231,7 +231,7 @@ Function 360Safe
    ${EndIf}   
   !insertmacro DEBUG_INFO ""
 
-   ;å®‰è£…è·¯å¾„æµè§ˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;°²×°Â·¾¶ä¯ÀÀ°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_InstallPathBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -242,7 +242,7 @@ Function 360Safe
    ${EndIf}   
      !insertmacro DEBUG_INFO ""
 
-   ;åˆ›å»ºæ¡Œé¢å¿«æ·æ–¹å¼ç»‘å®šå‡½æ•°
+   ;´´½¨×ÀÃæ¿ì½İ·½Ê½°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_ShortCutBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -254,7 +254,7 @@ Function 360Safe
    ${EndIf}
      !insertmacro DEBUG_INFO ""
 
-   ;æ·»åŠ åˆ°å¿«æ·å¯åŠ¨æ ç»‘å®šå‡½æ•°
+   ;Ìí¼Óµ½¿ì½İÆô¶¯À¸°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_QuickLaunchBarBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -268,7 +268,7 @@ Function 360Safe
      !insertmacro DEBUG_INFO ""
 
 
-   ;ä¸Šä¸€æ­¥æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;ÉÏÒ»²½°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_BackBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -280,7 +280,7 @@ Function 360Safe
 
      !insertmacro DEBUG_INFO ""
 
-   ;å¼€å§‹å®‰è£…æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;¿ªÊ¼°²×°°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_StartInstallBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -293,7 +293,7 @@ Function 360Safe
      !insertmacro DEBUG_INFO ""
 
 
-   ;å–æ¶ˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;È¡Ïû°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_CancelBtn4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -305,8 +305,8 @@ Function 360Safe
 
      !insertmacro DEBUG_INFO ""
 
-   ;----------------------------ç¬¬ä¸‰ä¸ªé¡µé¢-----------------------------------------------
-   ;å–æ¶ˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;----------------------------µÚÈı¸öÒ³Ãæ-----------------------------------------------
+   ;È¡Ïû°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_CancelBtn4Page3"
    Pop $0
    ${If} $0 == "-1"
@@ -316,7 +316,7 @@ Function 360Safe
         nsduilib::OnControlBindNSISScript "Wizard_CancelBtn4Page3"  $0
    ${EndIf}
 
-   ;åˆ‡æ¢èƒŒæ™¯ç»‘å®šå‡½æ•°
+   ;ÇĞ»»±³¾°°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_Background4Page3"
    Pop $0
    ${If} $0 == "-1"
@@ -329,7 +329,7 @@ Function 360Safe
 
       !insertmacro DEBUG_INFO ""
      
-   ;----------------------------ç¬¬å››ä¸ªé¡µé¢-----------------------------------------------
+   ;----------------------------µÚËÄ¸öÒ³Ãæ-----------------------------------------------
    nsduilib::FindControl "Wizard_Runing360SafeBtn"
    Pop $0
    ${If} $0 == "-1"
@@ -348,7 +348,7 @@ Function 360Safe
 
      !insertmacro DEBUG_INFO ""
 
-   ;å®ŒæˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;Íê³É°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_FinishedBtn4Page4"
    Pop $0
    ${If} $0 == "-1"
@@ -360,7 +360,7 @@ Function 360Safe
 
      !insertmacro DEBUG_INFO ""
 
-   ;é“¾æ¥æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;Á´½Ó°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_110Btn4Page4"
    Pop $0
    ${If} $0 == "-1"
@@ -372,7 +372,7 @@ Function 360Safe
 
      !insertmacro DEBUG_INFO ""
 
-   ;---------------------------------æ˜¾ç¤º------------------------------------------------
+   ;---------------------------------ÏÔÊ¾------------------------------------------------
    nsduilib::ShowPage
 
    !insertmacro DEBUG_INFO ""
@@ -380,16 +380,16 @@ Function 360Safe
 FunctionEnd
 
 Function un.360SafeUninstall
-   ;åˆå§‹åŒ–çª—å£          
+   ;³õÊ¼»¯´°¿Ú          
    nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "UninstallPackages.xml" "WizardTab"
    Pop $Dialog
 
-   ;åˆå§‹åŒ–MessageBoxçª—å£
+   ;³õÊ¼»¯MessageBox´°¿Ú
    nsduilib::InitTBCIAMessageBox "MessageBox.xml" "TitleLab" "TextLab" "CloseBtn" "YESBtn" "NOBtn"
    Pop $MessageBoxHandle   
 
-   ;å…¨å±€æŒ‰é’®ç»‘å®šå‡½æ•°
-   ;æœ€å°åŒ–æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;È«¾Ö°´Å¥°ó¶¨º¯Êı
+   ;×îĞ¡»¯°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_MinBtn"
    Pop $0
    ${If} $0 == "-1"
@@ -398,7 +398,7 @@ Function un.360SafeUninstall
 	GetFunctionAddress $0 un.OnGlobalMinFunc
 	nsduilib::OnControlBindNSISScript "Wizard_MinBtn" $0
    ${EndIf}
-   ;å…³é—­æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;¹Ø±Õ°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_CloseBtn"
    Pop $0
    ${If} $0 == "-1"
@@ -408,8 +408,8 @@ Function un.360SafeUninstall
 	nsduilib::OnControlBindNSISScript "Wizard_CloseBtn" $0
    ${EndIf}
 
-   ;-------------------------------------ç¡®å®šå¸è½½é¡µé¢------------------------------------
-   ;å¼€å§‹å¸è½½æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;-------------------------------------È·¶¨Ğ¶ÔØÒ³Ãæ------------------------------------
+   ;¿ªÊ¼Ğ¶ÔØ°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "UninstallBtn4UninstallPage"
    Pop $0
    ${If} $0 == "-1"
@@ -419,7 +419,7 @@ Function un.360SafeUninstall
         nsduilib::OnControlBindNSISScript "UninstallBtn4UninstallPage"  $0
    ${EndIf}
 
-   ;å–æ¶ˆæŒ‰é’®ç»‘å®šå‡½æ•°
+   ;È¡Ïû°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "CancelBtn4UninstallPage"
    Pop $0
    ${If} $0 == "-1"
@@ -429,7 +429,7 @@ Function un.360SafeUninstall
         nsduilib::OnControlBindNSISScript "CancelBtn4UninstallPage"  $0
    ${EndIf}
 
-   ;åˆ‡æ¢èƒŒæ™¯ç»‘å®šå‡½æ•°
+   ;ÇĞ»»±³¾°°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_BackgroundUninstallPage"
    Pop $0
    ${If} $0 == "-1"
@@ -440,8 +440,8 @@ Function un.360SafeUninstall
 	nsduilib::TBCIACreatTimer $timerID4Uninstall 2000  ;callback interval        
    ${EndIf}   
 
-    ;--------------------------------å¸è½½å®Œæˆé¡µé¢----------------------------------------
-   ;å®ŒæˆæŒ‰é’®ç»‘å®šå‡½æ•°
+    ;--------------------------------Ğ¶ÔØÍê³ÉÒ³Ãæ----------------------------------------
+   ;Íê³É°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "FinishedBtn4UninstallPage"
    Pop $0
    ${If} $0 == "-1"
@@ -451,7 +451,7 @@ Function un.360SafeUninstall
         nsduilib::OnControlBindNSISScript "FinishedBtn4UninstallPage"  $0
    ${EndIf}
 
-   ;é“¾æ¥æŒ‰é’®ç»‘å®šå‡½æ•°
+   ;Á´½Ó°´Å¥°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_110Btn4UninstallPage"
    Pop $0
    ${If} $0 == "-1"
@@ -466,7 +466,7 @@ Function un.360SafeUninstall
 FunctionEnd
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
-; å‡½æ•°çš„å®šä¹‰
+; º¯ÊıµÄ¶¨Òå
 
 Function .onInit
   GetTempFileName $0
@@ -481,20 +481,20 @@ Function .onInit
   StrCpy $installPath "$PROGRAMFILES\360\${PRODUCT_NAME_EN}"
   Call UpdateFreeSpace
 
-  FindWindow $0 "UIMainFrame" "360å®‰å…¨å«å£«"  ;åˆ¤æ–­å®¢æˆ·ç«¯æ˜¯å¦åœ¨è¿è¡Œä¸­
+  FindWindow $0 "UIMainFrame" "360°²È«ÎÀÊ¿"  ;ÅĞ¶Ï¿Í»§¶ËÊÇ·ñÔÚÔËĞĞÖĞ
   ;Dumpstate::debug
   IsWindow $0 0 +5  
-     MessageBox MB_RETRYCANCEL "æ‚¨å·²ç»è¿è¡Œäº†360Safeç¨‹åºã€‚è¯·å…³é—­è¯¥ç¨‹åºåå†è¯•ï¼" IDRETRY RetryInstall  IDCANCEL NotInstall
+     MessageBox MB_RETRYCANCEL "ÄúÒÑ¾­ÔËĞĞÁË360Safe³ÌĞò¡£Çë¹Ø±Õ¸Ã³ÌĞòºóÔÙÊÔ£¡" IDRETRY RetryInstall  IDCANCEL NotInstall
      RetryInstall:
        Goto -4;
      NotInstall:
        Goto +1     
   StrCmp $0 "0" 0 0
   !insertmacro DEBUG_INFO ""
-  ; åˆ¤æ–­mutex çŸ¥é“æ˜¯å¦è¿˜æœ‰å®‰è£…å¸è½½ç¨‹åºè¿è¡Œ
+  ; ÅĞ¶Ïmutex ÖªµÀÊÇ·ñ»¹ÓĞ°²×°Ğ¶ÔØ³ÌĞòÔËĞĞ
   !insertmacro MutexCheck "${SETUP_MUTEX_NAME}" $0 $9
   StrCmp $0 0 launch
-  MessageBox MB_OK "æ‚¨å·²ç»è¿è¡Œäº†å®‰è£…å¸è½½ç¨‹åºï¼"
+  MessageBox MB_OK "ÄúÒÑ¾­ÔËĞĞÁË°²×°Ğ¶ÔØ³ÌĞò£¡"
   Abort
   StrLen $0 "$(^Name)"
   IntOp $0 $0 + 1
@@ -511,18 +511,18 @@ Function .onInit
    Abort
 
  launch: 
-  ; åˆ¤æ–­æ“ä½œç³»ç»Ÿ
+  ; ÅĞ¶Ï²Ù×÷ÏµÍ³
   Call GetWindowsVersion
   Pop $R0
   StrCmp $R0 "98"   done
   StrCmp $R0 "2000" done
    Goto End
   done:
-     MessageBox MB_OK "å¯¹ä¸èµ·ï¼Œ360Safeç›®å‰ä»…å¯ä»¥å®‰è£…åœ¨Windows 7/XP/Vistaæ“ä½œç³»ç»Ÿä¸Šã€‚"
+     MessageBox MB_OK "¶Ô²»Æğ£¬360SafeÄ¿Ç°½ö¿ÉÒÔ°²×°ÔÚWindows 7/XP/Vista²Ù×÷ÏµÍ³ÉÏ¡£"
      Abort
   End:  
   
-  ; æ£€æŸ¥ç‰ˆæœ¬
+  ; ¼ì²é°æ±¾
   SetOutPath "$360Safetemp\${PRODUCT_NAME_EN}Setup"
   File ".\360Safe\${PRODUCT_MAIN_EXE}"
   
@@ -533,28 +533,28 @@ Function .onInit
   Var /Global local_check_version
   ${VersionCompare} "$local_setup_version" "$0" $local_check_version
   
-  ; è¦†ç›–å®‰è£…
+  ; ¸²¸Ç°²×°
   ${If} $0 != ""
-    ;ç›¸åŒç‰ˆæœ¬
+    ;ÏàÍ¬°æ±¾
     ${If} $local_check_version == "0"
 	StrCmp $local_check_version "0" 0 +4
-	MessageBox MB_YESNO "æ‚¨å·²ç»å®‰è£…å½“å‰ç‰ˆæœ¬çš„${PRODUCT_NAME},æ˜¯å¦è¦†ç›–å®‰è£…ï¼Ÿ" IDYES true IDNO false
+	MessageBox MB_YESNO "ÄúÒÑ¾­°²×°µ±Ç°°æ±¾µÄ${PRODUCT_NAME},ÊÇ·ñ¸²¸Ç°²×°£¿" IDYES true IDNO false
 	true:
 	   StrCpy $InstallState "Cover"
 	   Goto CHECK_RUN
 	false: 
 	   Quit
-    ;å®‰è£…åŒ…ç‰ˆæœ¬è¾ƒä½
+    ;°²×°°ü°æ±¾½ÏµÍ
     ${ElseIf} $local_check_version == "2"
-	MessageBox MB_OK|MB_ICONINFORMATION "æ‚¨å·²ç»å®‰è£…è¾ƒæ–°ç‰ˆæœ¬çš„${PRODUCT_NAME}ï¼Œæ­¤æ—§ç‰ˆæœ¬æ— æ³•å®Œæˆå®‰è£…ï¼Œç»§ç»­å®‰è£…éœ€å…ˆå¸è½½å·²æœ‰ç‰ˆæœ¬"
+	MessageBox MB_OK|MB_ICONINFORMATION "ÄúÒÑ¾­°²×°½ÏĞÂ°æ±¾µÄ${PRODUCT_NAME}£¬´Ë¾É°æ±¾ÎŞ·¨Íê³É°²×°£¬¼ÌĞø°²×°ĞèÏÈĞ¶ÔØÒÑÓĞ°æ±¾"
 	Quit
-    ;å®‰è£…åŒ…ç‰ˆæœ¬è¾ƒé«˜
+    ;°²×°°ü°æ±¾½Ï¸ß
     ${Else}
 	Goto CHECK_RUN
     ${EndIf}    
   ${EndIf}
   !insertmacro DEBUG_INFO ""
-  ;åˆ¤æ–­è¿›ç¨‹æ˜¯å¦å­˜åœ¨
+  ;ÅĞ¶Ï½ø³ÌÊÇ·ñ´æÔÚ
   CHECK_RUN:
   ;NO_RUNNING_PROCESS:
   
@@ -567,7 +567,7 @@ Function .onInit
   System::Int64Op $0 / 1024
   Pop $2
   IntCmp $2 $1 "" "" +3
-  MessageBox MB_OK|MB_ICONEXCLAMATION "ä¸´æ—¶ç›®å½•æ‰€åœ¨ç£ç›˜ç©ºé—´ä¸è¶³ï¼Œæ— æ³•è§£å‹ï¼"
+  MessageBox MB_OK|MB_ICONEXCLAMATION "ÁÙÊ±Ä¿Â¼ËùÔÚ´ÅÅÌ¿Õ¼ä²»×ã£¬ÎŞ·¨½âÑ¹£¡"
   Quit  
 FunctionEnd
 
@@ -578,53 +578,53 @@ Function .onGUIEnd
 FunctionEnd
 
 Function BuildShortCut
-  ;å¼€å§‹èœå•
+  ;¿ªÊ¼²Ëµ¥
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"       "$INSTDIR\${PRODUCT_MAIN_EXE}"
-  CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\\u5378è½½${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
-  ;æ¡Œé¢å¿«æ·æ–¹å¼
+  CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\\u5378ÔØ${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
+  ;×ÀÃæ¿ì½İ·½Ê½
   StrCmp $DesktopIconState "1" "" +2
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
     
-  ;å¿«é€Ÿå¯åŠ¨
+  ;¿ìËÙÆô¶¯
   StrCmp $FastIconState "1" "" +2
   CreateShortCut "$QUICKLAUNCH\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
   
-  ;æ³¨å†Œè¡¨
-  ;æ§åˆ¶é¢æ¿å¸è½½è¿æ¥
+  ;×¢²á±í
+  ;¿ØÖÆÃæ°åĞ¶ÔØÁ¬½Ó
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "DisplayName" "${PRODUCT_NAME}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "DisplayIcon" '"$INSTDIR\${PRODUCT_MAIN_EXE}"'
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "Publisher" "TBCIAå‡ºå“"  
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "Publisher" "TBCIA³öÆ·"  
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "HelpLink" "http://safe.taobao.com"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "DisplayVersion" "1.0.0.1"
 FunctionEnd
 
 Function un.onInit
-  ;åˆ¤æ–­å®¢æˆ·ç«¯æ˜¯å¦åœ¨è¿è¡Œä¸­
-  ;FindWindow $0 "UIMainFrame" "360å®‰å…¨å«å£«"
+  ;ÅĞ¶Ï¿Í»§¶ËÊÇ·ñÔÚÔËĞĞÖĞ
+  ;FindWindow $0 "UIMainFrame" "360°²È«ÎÀÊ¿"
   ;Dumpstate::debug
   ;IsWindow $0 0 +4  
-  ;MessageBox MB_OK "æ‚¨å·²ç»è¿è¡Œäº†360Safeç¨‹åºã€‚å¦‚éœ€å¸è½½ï¼Œè¯·å…ˆå…³é—­è¯¥ç¨‹åºï¼"
+  ;MessageBox MB_OK "ÄúÒÑ¾­ÔËĞĞÁË360Safe³ÌĞò¡£ÈçĞèĞ¶ÔØ£¬ÇëÏÈ¹Ø±Õ¸Ã³ÌĞò£¡"
   ;Goto -3;
   ;Goto close_run_cancel
   
-  ;åˆ¤æ–­å®¢æˆ·ç«¯æ˜¯å¦åœ¨è¿è¡Œä¸­
-  FindWindow $0 "UIMainFrame" "360å®‰å…¨å«å£«"
+  ;ÅĞ¶Ï¿Í»§¶ËÊÇ·ñÔÚÔËĞĞÖĞ
+  FindWindow $0 "UIMainFrame" "360°²È«ÎÀÊ¿"
   ;Dumpstate::debug
   IsWindow $0 0 +5  
-  MessageBox MB_RETRYCANCEL "æ‚¨å·²ç»è¿è¡Œäº†360Safeç¨‹åºã€‚è¯·å…³é—­è¯¥ç¨‹åºåå†è¯•ï¼" IDRETRY RetryUninstall  IDCANCEL NotUninstall
+  MessageBox MB_RETRYCANCEL "ÄúÒÑ¾­ÔËĞĞÁË360Safe³ÌĞò¡£Çë¹Ø±Õ¸Ã³ÌĞòºóÔÙÊÔ£¡" IDRETRY RetryUninstall  IDCANCEL NotUninstall
      RetryUninstall:
        Goto -3;
      NotUninstall:
         Goto +1     
   StrCmp $0 0 0 0
   
-  ; åˆ¤æ–­mutex çŸ¥é“æ˜¯å¦è¿˜æœ‰å®‰è£…å¸è½½ç¨‹åºè¿è¡Œ
+  ; ÅĞ¶Ïmutex ÖªµÀÊÇ·ñ»¹ÓĞ°²×°Ğ¶ÔØ³ÌĞòÔËĞĞ
   !insertmacro MutexCheck "${SETUP_MUTEX_NAME}" $0 $9
   StrCmp $0 0 launch
-  MessageBox MB_OK "æ‚¨å·²ç»è¿è¡Œäº†å®‰è£…å¸è½½ç¨‹åºï¼"
+  MessageBox MB_OK "ÄúÒÑ¾­ÔËĞĞÁË°²×°Ğ¶ÔØ³ÌĞò£¡"
   StrCmp $0 0 0 0
   StrLen $0 "$(^Name)"
   IntOp $0 $0 + 1
@@ -640,7 +640,7 @@ loop:
   System::Call "user32::ShowWindow(i r1,i 9) i."
   Abort
 launch: 
-  ;åˆ¤æ–­è¿›ç¨‹æ˜¯å¦å­˜åœ¨
+  ;ÅĞ¶Ï½ø³ÌÊÇ·ñ´æÔÚ
 FunctionEnd
 
 Function OnGlobalMinFunc
@@ -648,7 +648,7 @@ Function OnGlobalMinFunc
 FunctionEnd
 
 Function OnGlobalCancelFunc
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIACANCEL "360Safeå®‰è£…" "ç¡®å®šè¦é€€å‡º360Safeå®‰è£…ï¼Ÿ"
+   nsduilib::TBCIASendMessage $Dialog WM_TBCIACANCEL "360Safe°²×°" "È·¶¨ÒªÍË³ö360Safe°²×°£¿"
    Pop $0
    ${If} $0 == "0"
      nsduilib::ExitTBCIASkinEngine
@@ -660,7 +660,7 @@ Function un.OnGlobalMinFunc
 FunctionEnd
 
 Function un.OnGlobalCancelFunc
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIACANCEL "360Safeå®‰è£…" "ç¡®å®šè¦é€€å‡º360Safeå®‰è£…ï¼Ÿ"
+   nsduilib::TBCIASendMessage $Dialog WM_TBCIACANCEL "360Safe°²×°" "È·¶¨ÒªÍË³ö360Safe°²×°£¿"
    Pop $0
    ${If} $0 == "0"
      nsduilib::ExitTBCIASkinEngine
@@ -697,7 +697,7 @@ Function OnFinishedBtnFunc
      StrCpy $RunNow "0" 
    ${EndIf}
 
-   ;å¼€æœºè¿è¡Œ
+   ;¿ª»úÔËĞĞ
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPTIONSTATE "Wizard_BootRuning360SafeBtn" ""
    Pop $0
    ${If} $0 == "1"
@@ -725,16 +725,16 @@ Function OnLinkBtnFunc
 FunctionEnd
 
 Function OnTextChangeFunc
-   ; æ”¹å˜å¯ç”¨ç£ç›˜ç©ºé—´å¤§å°
+   ; ¸Ä±ä¿ÉÓÃ´ÅÅÌ¿Õ¼ä´óĞ¡
    nsduilib::GetControlData Wizard_InstallPathEdit4Page2 "text"
    Pop $0
    ;MessageBox MB_OK $0
    StrCpy $INSTDIR $0
 
-   ;é‡æ–°è·å–ç£ç›˜ç©ºé—´
+   ;ÖØĞÂ»ñÈ¡´ÅÅÌ¿Õ¼ä
    Call UpdateFreeSpace
 
-   ;æ›´æ–°ç£ç›˜ç©ºé—´æ–‡æœ¬æ˜¾ç¤º
+   ;¸üĞÂ´ÅÅÌ¿Õ¼äÎÄ±¾ÏÔÊ¾
    nsduilib::FindControl "Wizard_UsableSpaceLab4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -743,7 +743,7 @@ Function OnTextChangeFunc
 	;nsduilib::SetText2Control "Wizard_UsableSpaceLab4Page2"  $FreeSpaceSize
 	nsduilib::SetControlData "Wizard_UsableSpaceLab4Page2"  $FreeSpaceSize  "text"
    ${EndIf}
-   ;è·¯å¾„æ˜¯å¦åˆæ³•ï¼ˆåˆæ³•åˆ™ä¸ä¸º0Bytesï¼‰
+   ;Â·¾¶ÊÇ·ñºÏ·¨£¨ºÏ·¨Ôò²»Îª0Bytes£©
    ${If} $FreeSpaceSize == "0Bytes"
 	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "false" "enable"
    ${Else}
@@ -754,10 +754,10 @@ FunctionEnd
 Function OnChangeFunc
    ${If} $changebkimageIndex == "0"
         StrCpy $changebkimageIndex "1"
-	nsduilib::SetControlData "Wizard_Background4Page3" "å†…åµŒèƒŒæ™¯4Page3_1.png" "bkimage"
+	nsduilib::SetControlData "Wizard_Background4Page3" "ÄÚÇ¶±³¾°4Page3_1.png" "bkimage"
    ${Else}
         StrCpy $changebkimageIndex "0"
-	nsduilib::SetControlData "Wizard_Background4Page3" "å†…åµŒèƒŒæ™¯4Page3_2.png" "bkimage"
+	nsduilib::SetControlData "Wizard_Background4Page3" "ÄÚÇ¶±³¾°4Page3_2.png" "bkimage"
    ${EndIf}
 
 FunctionEnd
@@ -783,14 +783,14 @@ Function OnFastIconStateFunc
 FunctionEnd
 
 Function OnInstallPathBrownBtnFunc
-   nsduilib::SelectFolderDialog "è¯·é€‰æ‹©æ–‡ä»¶å¤¹" 
+   nsduilib::SelectFolderDialog "ÇëÑ¡ÔñÎÄ¼ş¼Ğ" 
    Pop $installPath
 
    StrCpy $0 $installPath
    ${If} $0 == "-1"
    ${Else}
       StrCpy $INSTDIR "$installPath\${PRODUCT_NAME_EN}"
-      ;è®¾ç½®å®‰è£…è·¯å¾„ç¼–è¾‘æ¡†æ–‡æœ¬
+      ;ÉèÖÃ°²×°Â·¾¶±à¼­¿òÎÄ±¾
       nsduilib::FindControl "Wizard_InstallPathEdit4Page2"
       Pop $0
       ${If} $0 == "-1"
@@ -802,17 +802,17 @@ Function OnInstallPathBrownBtnFunc
       ${EndIf}
    ${EndIf}
 
-   ;é‡æ–°è·å–ç£ç›˜ç©ºé—´
+   ;ÖØĞÂ»ñÈ¡´ÅÅÌ¿Õ¼ä
    Call UpdateFreeSpace
 
-   ;è·¯å¾„æ˜¯å¦åˆæ³•ï¼ˆåˆæ³•åˆ™ä¸ä¸º0Bytesï¼‰
+   ;Â·¾¶ÊÇ·ñºÏ·¨£¨ºÏ·¨Ôò²»Îª0Bytes£©
    ${If} $FreeSpaceSize == "0Bytes"
 	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "false" "enable"
    ${Else}
 	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "true" "enable"
    ${EndIf}
 
-   ;æ›´æ–°ç£ç›˜ç©ºé—´æ–‡æœ¬æ˜¾ç¤º
+   ;¸üĞÂ´ÅÅÌ¿Õ¼äÎÄ±¾ÏÔÊ¾
    nsduilib::FindControl "Wizard_UsableSpaceLab4Page2"
    Pop $0
    ${If} $0 == "-1"
@@ -851,7 +851,7 @@ Function UpdateFreeSpace
 FunctionEnd
 
 Function InstallShow
-   ;è¿›åº¦æ¡ç»‘å®šå‡½æ•°
+   ;½ø¶ÈÌõ°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_InstallProgress"
    Pop $0
    ${If} $0 == "-1"
@@ -862,7 +862,7 @@ Function InstallShow
 FunctionEnd 
 
 Function un.UninstallShow 
-   ;è¿›åº¦æ¡ç»‘å®šå‡½æ•°
+   ;½ø¶ÈÌõ°ó¶¨º¯Êı
    nsduilib::FindControl "Wizard_UninstallProgress"
    Pop $0
    ${If} $0 == "-1"
@@ -883,9 +883,9 @@ FunctionEnd
 Function un.OnChangeFunc
    ${If} $changebkimage4UninstallIndex == "0"
         StrCpy $changebkimage4UninstallIndex "1"
-	nsduilib::SetControlData "Wizard_BackgroundUninstallPage" "å†…åµŒèƒŒæ™¯4Page3_1.png" "bkimage"
+	nsduilib::SetControlData "Wizard_BackgroundUninstallPage" "ÄÚÇ¶±³¾°4Page3_1.png" "bkimage"
    ${Else}
         StrCpy $changebkimage4UninstallIndex "0"
-	nsduilib::SetControlData "Wizard_BackgroundUninstallPage" "å†…åµŒèƒŒæ™¯4Page3_2.png" "bkimage"
+	nsduilib::SetControlData "Wizard_BackgroundUninstallPage" "ÄÚÇ¶±³¾°4Page3_2.png" "bkimage"
    ${EndIf}
 FunctionEnd
