@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "SkinEngine.h"
 #include "api.h"
+#include <output_debug.h>
 
 extern extra_parameters* g_pluginParms;
 extern BOOL g_bMSGLoopFlag;
@@ -242,6 +243,7 @@ namespace DuiLib {
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
+		DEBUG_INFO("umsg 0x%x:%d wParam 0x%x lParam 0%x\n",uMsg,uMsg,wParam,lParam);
 		switch( uMsg ) {
 	case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 	case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;

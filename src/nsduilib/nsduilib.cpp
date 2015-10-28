@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <atlconv.h>
 #include <string>
+#include <output_debug.h>
 using namespace DuiLib;
 
 extern HINSTANCE g_hInstance;
@@ -34,16 +35,18 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
 
 void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	DEBUG_INFO("\n");
 	g_pluginParms = extra;
 	EXDLL_INIT();
 	extra->RegisterPluginCallback(g_hInstance, PluginCallback);
+	DEBUG_INFO("\n");
 	{
 		TCHAR skinPath[MAX_PATH];
 		TCHAR skinLayoutFileName[MAX_PATH];
 		TCHAR installPageTabName[MAX_PATH];
-		ZeroMemory(skinPath, MAX_PATH);
-		ZeroMemory(skinLayoutFileName, MAX_PATH);
-		ZeroMemory(installPageTabName, MAX_PATH);
+		ZeroMemory(skinPath, MAX_PATH*sizeof(TCHAR));
+		ZeroMemory(skinLayoutFileName, MAX_PATH*sizeof(TCHAR));
+		ZeroMemory(installPageTabName, MAX_PATH*sizeof(TCHAR));
 
 		popstring(skinPath);  // 皮肤路径
 		popstring(skinLayoutFileName); //皮肤文件
@@ -62,13 +65,15 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		ShowWindow( g_pFrame->GetHWND(), FALSE );
 
 		pushint( int(g_pFrame->GetHWND()));
+		DEBUG_INFO("\n");
 	}
+	DEBUG_INFO("\n");
 }
 
 void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
-	ZeroMemory(controlName, MAX_PATH);
+	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 
 	popstring( controlName );
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
@@ -82,8 +87,8 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 {
 	TCHAR controlName[MAX_PATH];
 	TCHAR fileName[MAX_PATH];
-	ZeroMemory(controlName, MAX_PATH);
-	ZeroMemory(fileName, MAX_PATH);
+	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(fileName, MAX_PATH*sizeof(TCHAR));
 	popstring( controlName );
 	popstring( fileName );
 	CStdString finalFileName = g_skinPath + _T("\\") + fileName;	
@@ -94,24 +99,45 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 	// 读许可协议文件，append到richedit中
 	USES_CONVERSION;
 	FILE* infile;
+	TCHAR *ptchlicense=NULL;
 	char *pLicense = NULL;	
 	infile = fopen( T2A(finalFileName.GetData()), "r" );
 	fseek( infile, 0,  SEEK_END );
 	int nSize = ftell(infile);
 	fseek(infile, 0, SEEK_SET);
-	pLicense = new char[nSize];	
-	if (pLicense == NULL)
+	pLicense = new char[nSize];
+	ptchlicense = new TCHAR[nSize+1];
+	if (pLicense == NULL || ptchlicense == NULL)
 	{
+		if (pLicense)
+		{
+			delete []pLicense;
+		}
+		pLicense = NULL;
+		if (ptchlicense)
+		{
+			delete []ptchlicense;
+		}
+		ptchlicense = NULL;
 		fclose(infile);
 		return;
 	}
 
 	ZeroMemory(pLicense, sizeof(char) * nSize);
+	ZeroMemory(ptchlicense,sizeof(TCHAR)* (nSize + 1));
 	fread_s(pLicense, nSize, sizeof(char), nSize, infile);
-	pRichEditControl->AppendText( A2T(pLicense) );
+	/*now we change the text*/
+	mbstowcs(ptchlicense,pLicense,nSize+1);
+	pRichEditControl->AppendText( ptchlicense);
 	if (pLicense != NULL)
 	{
 		delete []pLicense;
+		pLicense = NULL;
+	}
+	if (ptchlicense != NULL)
+	{
+		delete []ptchlicense;
+		ptchlicense = NULL;
 	}
 	fclose( infile );
 }
@@ -363,12 +389,15 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	BOOL res = 0;
+	DEBUG_INFO("\n");
 	std::map<HWND, WNDPROC>::iterator iter = g_windowInfoMap.find( hwnd );
 	if( iter != g_windowInfoMap.end() )
 	{
  		if (message == WM_PAINT)
  		{
+ 			DEBUG_INFO("\n");
  			ShowWindow( hwnd, SW_HIDE );
+			DEBUG_INFO("\n");
  		}
 		else if( message == LVM_SETITEMTEXT ) // TODO  安装细节显示  等找到消息再写
 		{
@@ -386,15 +415,18 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			{
 				CTabLayoutUI* pTab = NULL;
 				int currentIndex;
+				DEBUG_INFO("\n");
 				pTab = static_cast<CTabLayoutUI*>(g_pFrame->GetPaintManager().FindControl( g_installPageTabName ));
 				if( pTab == NULL )
 					return -1;
 				currentIndex = pTab->GetCurSel();
 				pTab->SelectItem( currentIndex + 1 );
+				DEBUG_INFO("\n");
 			}
  		}
  		else
  		{
+ 			DEBUG_INFO("\n");
 			res = CallWindowProc( iter->second, hwnd, message, wParam, lParam);
 		}
 	}	
@@ -427,13 +459,19 @@ void StartUninstall(HWND hwndParent, int string_size, char *variables, stack_t *
 
 void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	DEBUG_INFO("\n");
 	ShowWindow( g_pFrame->GetHWND(), TRUE );
+	DEBUG_INFO("\n");
 	MSG msg = { 0 };
 	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag ) 
 	{
+		DEBUG_INFO("\n");
 		::TranslateMessage(&msg);
+		DEBUG_INFO("\n");
 		::DispatchMessage(&msg);
+		DEBUG_INFO("\n");
 	}
+	DEBUG_INFO("\n");
 }
 
 void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
