@@ -145,7 +145,7 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
-	ZeroMemory(controlName, MAX_PATH);
+	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 
 	popstring(controlName); 
 	int callbackID = popint();
@@ -157,9 +157,9 @@ void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 	TCHAR controlName[MAX_PATH];
 	TCHAR controlData[MAX_PATH];
 	TCHAR dataType[MAX_PATH];
-	ZeroMemory(controlName, MAX_PATH);
-	ZeroMemory(controlData, MAX_PATH);
-	ZeroMemory(dataType, MAX_PATH);
+	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(controlData, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
 
 	popstring( controlName );
 	popstring( controlData );
@@ -207,8 +207,8 @@ void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 {
 	TCHAR ctlName[MAX_PATH];
 	TCHAR dataType[MAX_PATH];
-	ZeroMemory(ctlName, MAX_PATH);
-	ZeroMemory(dataType, MAX_PATH);
+	ZeroMemory(ctlName, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
 	popstring( ctlName );
 	popstring( dataType );
 	
@@ -279,9 +279,9 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	TCHAR wParam[MAX_PATH];
 	TCHAR lParam[MAX_PATH];
 
- 	ZeroMemory(msgID, MAX_PATH);
-	ZeroMemory(wParam, MAX_PATH);
-	ZeroMemory(lParam, MAX_PATH);
+ 	ZeroMemory(msgID, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(wParam, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(lParam, MAX_PATH*sizeof(TCHAR));
 
 	popstring( msgID );
 	popstring( wParam );
@@ -332,8 +332,13 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 		lpCmdLine += url;
 		lpCmdLine += _T("\"");
 		USES_CONVERSION;
-		std::string strCmdLine = T2A(lpCmdLine.GetData());		
-		WinExec( strCmdLine.c_str(), SW_SHOWNORMAL);
+		char strCmdLine[MAX_PATH];
+#ifdef _UNICODE
+		wcstombs(strCmdLine,lpCmdLine.GetData(),MAX_PATH);
+#else
+		strncpy(strCmdLine,lpCmdLine.GetData(),MAX_PATH);
+#endif
+		WinExec( strCmdLine, SW_SHOWNORMAL);
 	}
 }
 
@@ -351,8 +356,8 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 	TCHAR result[MAX_PATH];
 	TCHAR title[MAX_PATH];
 	LPITEMIDLIST resultPIDL;
-	ZeroMemory(result, MAX_PATH);
-	ZeroMemory(title, MAX_PATH);
+	ZeroMemory(result, MAX_PATH*sizeof(TCHAR));
+	ZeroMemory(title, MAX_PATH*sizeof(TCHAR));
 
 	popstring( title );
 	bi.hwndOwner = g_pFrame->GetHWND();
@@ -428,6 +433,7 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
  		{
  			DEBUG_INFO("\n");
 			res = CallWindowProc( iter->second, hwnd, message, wParam, lParam);
+			DEBUG_INFO("res %d\n",res);
 		}
 	}	
 	return res;
@@ -436,7 +442,7 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 void InstallCore( HWND hwndParent )
 {
 	TCHAR progressName[MAX_PATH];
-	ZeroMemory(progressName, MAX_PATH);
+	ZeroMemory(progressName, MAX_PATH*sizeof(TCHAR));
 	popstring( progressName );
 	g_tempParam = progressName;
 	// 接管page instfiles的消息
