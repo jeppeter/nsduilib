@@ -15,28 +15,44 @@ namespace DuiLib {
 
 	void CSkinEngine::Notify(TNotifyUI& msg)
 	{
+		DEBUG_INFO("pSender 0x%p\n",msg.pSender);
+		msg.pSender->GetName();
+		DEBUG_INFO("\n");
 		std::map<CDuiString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
+		DEBUG_INFO("\n");
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
-			if( iter != m_controlCallbackMap.end() )
+			if( iter != m_controlCallbackMap.end() ){
+				DEBUG_INFO("\n");
 				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+				DEBUG_INFO("\n");
+			}
 		}
 		else if( _tcsicmp( msg.sType, _T("textchanged") ) == 0 ){
-			if( iter != m_controlCallbackMap.end() )
+			if( iter != m_controlCallbackMap.end() ){
+				DEBUG_INFO("\n");
 				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+				DEBUG_INFO("\n");
+			}
 		}
+		DEBUG_INFO("\n");
 	}
 
 	LRESULT CSkinEngine::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
+		DEBUG_INFO("\n");
 		styleValue &= ~WS_CAPTION;
 		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 		m_pm.Init(m_hWnd);
+		DEBUG_INFO("\n");
 		CDialogBuilder builder;
 		CControlUI* pRoot = builder.Create( GetSkinXMLPath(), (UINT)0, NULL, &m_pm);
 		ASSERT(pRoot && "Failed to parse XML");
+		DEBUG_INFO("pRoot = 0x%p\n",pRoot);
 		m_pm.AttachDialog(pRoot);
+		DEBUG_INFO("\n");
 		m_pm.AddNotifier( this );
+		DEBUG_INFO("\n");
 		ShowWindow( FALSE );
 		return 0;
 	}
@@ -322,15 +338,22 @@ namespace DuiLib {
 	LRESULT CTBCIAMessageBox::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
+		DEBUG_INFO("\n");
 		styleValue &= ~WS_CAPTION;
 		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+		DEBUG_INFO("\n");
 		m_pm.Init(m_hWnd);
 		CDialogBuilder builder;
 		CControlUI* pRoot = builder.Create( GetSkinXMLPath(), (UINT)0, NULL, &m_pm);
+		DEBUG_INFO("\n");
 		ASSERT(pRoot && "Failed to parse XML");
+		DEBUG_INFO("pRoot = 0x%p\n",pRoot);
 		m_pm.AttachDialog(pRoot);
+		DEBUG_INFO("\n");
 		m_pm.AddNotifier( this );
+		DEBUG_INFO("\n");
 		ShowWindow( FALSE );
+		DEBUG_INFO("\n");
 		return 0;
 	}
 
