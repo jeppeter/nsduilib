@@ -143,12 +143,17 @@ Function 360Safe
    ${If} $0 == "-1"
 	MessageBox MB_OK "Do not have min button"
    ${Else}
+  !insertmacro DEBUG_INFO ""
 	GetFunctionAddress $0 OnGlobalMinFunc
+  !insertmacro DEBUG_INFO ""
 	nsduilib::OnControlBindNSISScript "Wizard_MinBtn" $0
+  !insertmacro DEBUG_INFO ""
    ${EndIf}
    ;关闭按钮绑定函数
+   !insertmacro DEBUG_INFO ""
    nsduilib::FindControl "Wizard_CloseBtn"
    Pop $0
+   !insertmacro DEBUG_INFO ""
    ${If} $0 == "-1"
 	MessageBox MB_OK "Do not have close button"
    ${Else}

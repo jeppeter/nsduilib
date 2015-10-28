@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 #include <stdlib.h>
-#include <output_debug.h>
 
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
 typedef DWORD ZRESULT;
@@ -560,7 +559,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 //#endif
     // Not ready yet?
     if( m_hWndPaint == NULL ) return false;
-    DEBUG_INFO("\n");
     TNotifyUI* pMsg = NULL;
     while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
         m_aAsyncNotify.Remove(0);
@@ -572,7 +570,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         }
         delete pMsg;
     }
-    DEBUG_INFO("\n");
     // Cycle through listeners
     for( int i = 0; i < m_aMessageFilters.GetSize(); i++ ) 
     {
@@ -583,7 +580,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             return true;
         }
     }
-	DEBUG_INFO("\n");
     // Custom handling of events
     switch( uMsg ) {
     case WM_APP + 1:
@@ -628,7 +624,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         {
             // Should we paint?
             RECT rcPaint = { 0 };
-	    DEBUG_INFO("\n");
             if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
             if( m_pRoot == NULL ) {
                 PAINTSTRUCT ps = { 0 };
@@ -636,7 +631,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ::EndPaint(m_hWndPaint, &ps);
                 return true;
             }
-	    DEBUG_INFO("\n");
             // Do we need to resize anything?
             // This is the time where we layout the controls on the form.
             // We delay this even from the WM_SIZE messages since resizing can be
@@ -644,9 +638,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             if( m_bUpdateNeeded ) {
                 m_bUpdateNeeded = false;
                 RECT rcClient = { 0 };
-		 DEBUG_INFO("\n");
                 ::GetClientRect(m_hWndPaint, &rcClient);
-		 DEBUG_INFO("\n");
                 if( !::IsRectEmpty(&rcClient) ) {
                     if( m_pRoot->IsUpdateNeeded() ) {
                         if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
@@ -657,28 +649,18 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
-						DEBUG_INFO("\n");
 						m_pRoot->SetPos(rcClient, true);
-						DEBUG_INFO("\n");
                     }
                     else {
 						CControlUI* pControl = NULL;
 						m_aFoundControls.Empty();
-						DEBUG_INFO("\n");
 						m_pRoot->FindControl(__FindControlsFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST | UIFIND_UPDATETEST);
-						DEBUG_INFO("\n");
 						for( int it = 0; it < m_aFoundControls.GetSize(); it++ ) {
-							DEBUG_INFO("\n");
 							pControl = static_cast<CControlUI*>(m_aFoundControls[it]);
-							DEBUG_INFO("\n");
 							if( !pControl->IsFloat() ){ 
-								DEBUG_INFO("\n");
 								pControl->SetPos(pControl->GetPos(), true);
-								DEBUG_INFO("\n");
 							}else{ 
-								DEBUG_INFO("\n");
 								pControl->SetPos(pControl->GetRelativePos(), true);
-								DEBUG_INFO("\n");
 							}
 						}
                     }
@@ -687,13 +669,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                     // to submit swipes/animations.
                     if( m_bFirstLayout ) {
                         m_bFirstLayout = false;
-			  DEBUG_INFO("m_pRoot = 0x%p\n",m_pRoot);
                         SendNotify(m_pRoot, DUI_MSGTYPE_WINDOWINIT,  0, 0, false);
-			  DEBUG_INFO("\n");
                     }
                 }
             }
-	     DEBUG_INFO("\n");
             // Set focus to first control?
             if( m_bFocusNeeded ) {
                 SetNextTabControl();
@@ -711,7 +690,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ASSERT(m_hDcOffscreen);
                 ASSERT(m_hbmpOffscreen);
             }
-	     DEBUG_INFO("\n");
             // Begin Windows paint
             PAINTSTRUCT ps = { 0 };
             ::BeginPaint(m_hWndPaint, &ps);
@@ -760,17 +738,14 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 m_pRoot->DoPaint(ps.hdc, ps.rcPaint);
                 ::RestoreDC(ps.hdc, iSaveDC);
             }
-	    DEBUG_INFO("\n");
             // All Done!
             ::EndPaint(m_hWndPaint, &ps);
         }
-	DEBUG_INFO("\n");
         // If any of the painting requested a resize again, we'll need
         // to invalidate the entire window once more.
         if( m_bUpdateNeeded ) {
             ::InvalidateRect(m_hWndPaint, NULL, FALSE);
         }
-	DEBUG_INFO("\n");
         return true;
     case WM_PRINTCLIENT:
         {
@@ -1145,7 +1120,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     }
 
-    DEBUG_INFO("\n");
     pMsg = NULL;
     while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
         m_aAsyncNotify.Remove(0);
@@ -1157,7 +1131,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         }
         delete pMsg;
     }
-    DEBUG_INFO("\n");
 
     return false;
 }
@@ -1613,25 +1586,18 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
     Msg.dwTimestamp = ::GetTickCount();
 	if( m_bUsedVirtualWnd )
 	{
-		DEBUG_INFO("\n");
 		Msg.sVirtualWnd = Msg.pSender->GetVirtualWnd();
-		DEBUG_INFO("\n");
 	}
 
     if( !bAsync ) {
         // Send to all listeners
         if( Msg.pSender != NULL ) {
-	    DEBUG_INFO("\n");
             if( Msg.pSender->OnNotify ){
-			DEBUG_INFO("\n");
 			Msg.pSender->OnNotify(&Msg);
-			DEBUG_INFO("\n");
 	     }
         }
         for( int i = 0; i < m_aNotifiers.GetSize(); i++ ) {
-	    DEBUG_INFO("\n");
             static_cast<INotifyUI*>(m_aNotifiers[i])->Notify(Msg);
-	    DEBUG_INFO("\n");
         }
     }
     else {
@@ -1642,10 +1608,8 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
         pMsg->lParam = Msg.lParam;
         pMsg->ptMouse = Msg.ptMouse;
         pMsg->dwTimestamp = Msg.dwTimestamp;
-	 DEBUG_INFO("\n");
         m_aAsyncNotify.Add(pMsg);
-	DEBUG_INFO("\n");
-    }
+   }
 }
 
 DWORD CPaintManagerUI::GetDefaultDisabledColor() const

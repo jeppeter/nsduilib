@@ -13,29 +13,56 @@ extern TCHAR g_messageBoxNOBtnControlName[MAX_PATH];
 
 namespace DuiLib {
 
+	CSkinEngine::CSkinEngine()
+	{
+		this->m_pcodevecs = new std::vector<int>();
+		this->m_pnamevecs = new std::vector<CDuiString>();
+		DEBUG_INFO("this 0x%p\n",this);
+		DEBUG_INFO("codevecs 0x%p namevecs 0x%p\n",this->m_pcodevecs,this->m_pnamevecs);
+		DEBUG_INFO("size %d %d\n",this->m_pcodevecs->size(),this->m_pnamevecs->size());
+	}
 	void CSkinEngine::Notify(TNotifyUI& msg)
 	{
-		DEBUG_INFO("pSender 0x%p\n",msg.pSender);
-		msg.pSender->GetName();
-		DEBUG_INFO("\n");
-		std::map<CDuiString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
+		DEBUG_INFO("pSender 0x%p this 0x%p\n",msg.pSender,this);
+		CDuiString name = msg.pSender->GetName();
+		DEBUG_INFO("after get name\n");
+		int i=0 ,findidx=-1;
+		DEBUG_INFO("namevec 0x%p \n",this->m_pnamevecs);
+		DEBUG_INFO("size %d\n",this->m_pnamevecs->size());
+		for (i=0;i< (int) this->m_pnamevecs->size();i++)
+		{
+			if (name == this->m_pnamevecs->at(i))
+			{
+				findidx = i;
+				break;
+			}
+		}
 		DEBUG_INFO("\n");
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
-			if( iter != m_controlCallbackMap.end() ){
+			if( findidx >= 0){
 				DEBUG_INFO("\n");
-				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
 				DEBUG_INFO("\n");
 			}
 		}
 		else if( _tcsicmp( msg.sType, _T("textchanged") ) == 0 ){
-			if( iter != m_controlCallbackMap.end() ){
+			if( findidx >= 0){
 				DEBUG_INFO("\n");
-				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
 				DEBUG_INFO("\n");
 			}
 		}
 		DEBUG_INFO("\n");
 	}
+
+	void CSkinEngine::SaveToControlCallbackMap(CDuiString ctlName, int callback)
+	{
+	        //m_controlCallbackMap[ctlName] = callback;
+	        DEBUG_INFO("this 0x%p pname 0x%p pcode 0x%p\n",this,
+	                   this->m_pnamevecs,this->m_pcodevecs);
+	        this->m_pnamevecs->push_back(ctlName);
+	        this->m_pcodevecs->push_back(callback);
+        }
 
 	LRESULT CSkinEngine::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
@@ -307,10 +334,19 @@ namespace DuiLib {
 
 	void CTBCIAMessageBox::Notify(TNotifyUI& msg)
 	{
-		std::map<CDuiString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
+		CDuiString name = msg.pSender->GetName();
+		std::map<CDuiString, int >::iterator iter , finditer  = this->m_controlCallbackMap.end();
+		for (iter = this->m_controlCallbackMap.begin();iter != this->m_controlCallbackMap.end();++iter)
+		{
+			if (name == iter->first)
+			{
+				finditer = iter;
+				break;
+			}
+		}
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
-			if( iter != m_controlCallbackMap.end() )
-				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+			if( finditer != m_controlCallbackMap.end() )
+				g_pluginParms->ExecuteCodeSegment( finditer->second - 1, 0 );
 			else if( _tcsicmp( msg.pSender->GetName(), g_messageBoxCloseBtnControlName ) == 0 ){
 // 				SetParent( this->GetHWND(), NULL );
 // 				ShowWindow( SW_HIDE, FALSE );
@@ -330,8 +366,8 @@ namespace DuiLib {
 			}
 		}
  		else if( _tcsicmp( msg.sType, _T("textchanged") ) == 0 ){
- 			if( iter != m_controlCallbackMap.end() )
- 				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
+ 			if( finditer != m_controlCallbackMap.end() )
+ 				g_pluginParms->ExecuteCodeSegment( finditer->second - 1, 0 );
  		}
 	}
 

@@ -147,9 +147,11 @@ void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables,
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 
-	popstring(controlName); 
+	popstring(controlName);
 	int callbackID = popint();
+	DEBUG_INFO("\n");
 	g_pFrame->SaveToControlCallbackMap( controlName, callbackID );
+	DEBUG_INFO("\n");
 }
 
 void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
