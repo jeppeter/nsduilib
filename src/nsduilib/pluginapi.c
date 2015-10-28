@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include "pluginapi.h"
+#include <output_debug.h>
 
 #pragma warning(disable:4996)
 
@@ -15,6 +16,7 @@ int NSISCALL popstring(TCHAR* str)
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th = (*g_stacktop);
+	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
 	if (str) mbstowcs(str,th->text,strlen(th->text));
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
@@ -38,6 +40,7 @@ int NSISCALL popstringA(char* str)
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th=(*g_stacktop);
+	DEBUG_INFO("popstringA %s (%d)\n",th->text,strlen(th->text));
 	if (str) lstrcpyA(str,th->text);
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
@@ -49,6 +52,7 @@ int NSISCALL popstringn(char *str, int maxlen)
   stack_t *th;
   if (!g_stacktop || !*g_stacktop) return 1;
   th=(*g_stacktop);
+  DEBUG_INFO("popstringn %s (%d)\n",th->text,strlen(th->text));
   if (str) strncpy(str,th->text,maxlen?maxlen:g_stringsize);
   *g_stacktop = th->next;
   GlobalFree((HGLOBAL)th);
@@ -62,6 +66,7 @@ void NSISCALL pushstring(TCHAR *str)
 	if (!g_stacktop) return;
 	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);
 	wcstombs(th->text, str, g_stringsize);
+	DEBUG_INFO("pushstring %s (%d)\n",th->text,strlen(th->text));
 	th->next = *g_stacktop;
 	*g_stacktop = th;
 }

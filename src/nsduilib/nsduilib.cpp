@@ -127,7 +127,8 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 	ZeroMemory(ptchlicense,sizeof(TCHAR)* (nSize + 1));
 	fread_s(pLicense, nSize, sizeof(char), nSize, infile);
 	/*now we change the text*/
-	mbstowcs(ptchlicense,pLicense,nSize+1);
+	//mbstowcs(ptchlicense,pLicense,nSize+1);
+	memcpy(ptchlicense,pLicense,nSize);
 	pRichEditControl->AppendText( ptchlicense);
 	if (pLicense != NULL)
 	{
