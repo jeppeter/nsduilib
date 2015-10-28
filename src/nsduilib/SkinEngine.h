@@ -46,7 +46,7 @@ public:
 	LPCTSTR GetSkinXMLPath();
 
 	CPaintManagerUI& GetPaintManager();
- 	void SaveToControlCallbackMap( CStdString ctlName, int callback ) 
+ 	void SaveToControlCallbackMap( CDuiString ctlName, int callback ) 
  	{ 
  		m_controlCallbackMap[ctlName] = callback; 
  	}
@@ -54,7 +54,7 @@ public:
 private:
 	CPaintManagerUI              m_pm;
 	TCHAR                               m_skinXMLPath[MAX_PATH];
-	std::map<CStdString, int> m_controlCallbackMap;
+	std::map<CDuiString, int> m_controlCallbackMap;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ public:
 	LPCTSTR GetSkinXMLPath();
 
 	CPaintManagerUI& GetPaintManager();
-	void SaveToControlCallbackMap( CStdString ctlName, int callback ) 
+	void SaveToControlCallbackMap( CDuiString ctlName, int callback ) 
 	{ 
 		m_controlCallbackMap[ctlName] = callback; 
 	}
@@ -99,7 +99,7 @@ public:
 private:
 	CPaintManagerUI              m_pm;
 	TCHAR                               m_skinXMLPath[MAX_PATH];
-	std::map<CStdString, int> m_controlCallbackMap;
+	std::map<CDuiString, int> m_controlCallbackMap;
 };
 
 } // namespace DuiLib

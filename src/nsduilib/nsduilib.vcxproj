@@ -29,6 +29,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>FastLTCG</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -46,7 +47,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -72,8 +73,8 @@
     <_ProjectFileVersion>14.0.22823.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\</OutDir>
-    <IntDir>.\Release\</IntDir>
+    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <IntDir>.\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
@@ -108,7 +109,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;UILIB_STATIC;NSDUILIB_EXPORTS;NDEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeaderOutputFile>.\Release/nsTBCIASkinEngine.pch</PrecompiledHeaderOutputFile>
@@ -117,19 +118,19 @@
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\duilib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;atls.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release/nsTBCIASkinEngine.dll</OutputFile>
+      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)/$(Configuration)/$(ProjectName).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ProgramDatabaseFile>.\Release/nsTBCIASkinEngine.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(SolutionDir)\$(Configuration)\$(ProjectName).pdb</ProgramDatabaseFile>
       <BaseAddress>0x11000000</BaseAddress>
-      <ImportLibrary>../bin/nsTBCIASkinEngine.lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)\$(Configuration)\$(projectName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
@@ -151,7 +152,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;UILIB_STATIC;NSDUILIB_EXPORTS;_DEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -164,14 +165,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\duilib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;atls.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;oleaut32.lib;atls.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug\nsTBCIASkinEngine.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -199,7 +200,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;UILIB_STATIC;NSDUILIB_EXPORTS;_DEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -212,14 +213,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\duilib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>../bin/nsTBCIASkinEngine_ud.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -245,7 +246,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;UILIB_STATIC;NSDUILIB_EXPORTS;NDEBUG;_WINDOWS;UILIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeaderOutputFile>.\$(Configuration)\nsTBCIASkinEngine.pch</PrecompiledHeaderOutputFile>
@@ -254,20 +255,21 @@
       <ProgramDataBaseFileName>.\$(Configuration)\</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\duilib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;ole32.lib;shell32.lib;gdi32.lib;oleaut32.lib;duilib_u.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/$(Configuration)/$(ProjectName)_u.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>$(SolutionDir)\$(Configuration)\$(ProjectName)_u.pdb</ProgramDatabaseFile>
       <BaseAddress>0x11000000</BaseAddress>
       <ImportLibrary>$(SolutionDir)\$(Configuration)\$(projectName)_u.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -289,16 +291,6 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SkinEngine.cpp" />
-    <ClCompile Include="stb_image.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -306,29 +298,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="UIActiveX.cpp" />
-    <ClCompile Include="UIBase.cpp" />
-    <ClCompile Include="UICombo.cpp" />
-    <ClCompile Include="UICommonControls.cpp" />
-    <ClCompile Include="UIContainer.cpp" />
-    <ClCompile Include="UIControl.cpp" />
-    <ClCompile Include="UIDelegate.cpp" />
-    <ClCompile Include="UIDlgBuilder.cpp" />
-    <ClCompile Include="UIList.cpp" />
-    <ClCompile Include="UIManager.cpp" />
-    <ClCompile Include="UIMarkup.cpp" />
-    <ClCompile Include="UIRender.cpp" />
-    <ClCompile Include="UIRichEdit.cpp" />
-    <ClCompile Include="XUnzip.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">
-      </PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -338,20 +307,6 @@
     <ClInclude Include="pluginapi.h" />
     <ClInclude Include="SkinEngine.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="UIActiveX.h" />
-    <ClInclude Include="UIBase.h" />
-    <ClInclude Include="UICombo.h" />
-    <ClInclude Include="UICommonControls.h" />
-    <ClInclude Include="UIContainer.h" />
-    <ClInclude Include="UIControl.h" />
-    <ClInclude Include="UIDelegate.h" />
-    <ClInclude Include="UIDlgBuilder.h" />
-    <ClInclude Include="UIlib.h" />
-    <ClInclude Include="UIList.h" />
-    <ClInclude Include="UIManager.h" />
-    <ClInclude Include="UIMarkup.h" />
-    <ClInclude Include="UIRender.h" />
-    <ClInclude Include="UIRichEdit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

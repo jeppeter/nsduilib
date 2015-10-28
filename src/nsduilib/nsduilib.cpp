@@ -13,10 +13,10 @@ extra_parameters* g_pluginParms;
 DuiLib::CSkinEngine* g_pFrame = NULL;
 BOOL g_bMSGLoopFlag = TRUE;
 std::map<HWND, WNDPROC> g_windowInfoMap;
-CStdString g_tempParam = _T("");
-CStdString g_installPageTabName = _T("");
-std::map<CStdString, CStdString> g_controlLinkInfoMap;
-CStdString g_skinPath = _T("");
+DuiLib::CDuiString g_tempParam = _T("");
+DuiLib::CDuiString g_installPageTabName = _T("");
+std::map<DuiLib::CDuiString, DuiLib::CDuiString> g_controlLinkInfoMap;
+CDuiString g_skinPath = _T("");
 
 DuiLib::CTBCIAMessageBox* g_pMessageBox = NULL;
 
@@ -91,7 +91,7 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 	ZeroMemory(fileName, MAX_PATH*sizeof(TCHAR));
 	popstring( controlName );
 	popstring( fileName );
-	CStdString finalFileName = g_skinPath + _T("\\") + fileName;	
+	CDuiString finalFileName = g_skinPath + _T("\\") + fileName;	
 	CRichEditUI* pRichEditControl = static_cast<CRichEditUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pRichEditControl == NULL )
 		return;
@@ -322,13 +322,13 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	}
 	else if( _tcsicmp( msgID, _T("WM_TBCIAOPENURL")) == 0 )
 	{
-		CStdString url = (CStdString)wParam;
+		CDuiString url = (CDuiString)wParam;
 		if( url.Find( _T("http://") ) == -1 )
 		{
 			pushstring( _T("url error") );
 			return;
 		}
-		CStdString lpCmdLine = _T("explorer \"");
+		CDuiString lpCmdLine = _T("explorer \"");
 		lpCmdLine += url;
 		lpCmdLine += _T("\"");
 		USES_CONVERSION;
@@ -485,7 +485,7 @@ void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, sta
 	ExitProcess( 0 );
 }
 
-DLLEXPORT void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	popstring( g_messageBoxLayoutFileName );
 

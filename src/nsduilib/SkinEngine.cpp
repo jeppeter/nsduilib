@@ -15,7 +15,7 @@ namespace DuiLib {
 
 	void CSkinEngine::Notify(TNotifyUI& msg)
 	{
-		std::map<CStdString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
+		std::map<CDuiString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
 			if( iter != m_controlCallbackMap.end() )
 				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
@@ -111,7 +111,7 @@ namespace DuiLib {
 	{
 // 		SIZE szRoundCorner = m_pm.GetRoundCorner();
 // 		if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
-// 			CRect rcWnd;
+// 			CDuiRect rcWnd;
 // 			::GetWindowRect(*this, &rcWnd);
 // 			rcWnd.Offset(-rcWnd.left, -rcWnd.top);
 // 			rcWnd.right++; rcWnd.bottom++;
@@ -129,7 +129,7 @@ namespace DuiLib {
 		SIZE szRoundCorner = m_pm.GetRoundCorner();
 #if defined(WIN32) && !defined(UNDER_CE)
 		if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
-			CRect rcWnd;
+			CDuiRect rcWnd;
 			::GetWindowRect(*this, &rcWnd);
 			rcWnd.Offset(-rcWnd.left, -rcWnd.top);
 			rcWnd.right++; rcWnd.bottom++;
@@ -265,7 +265,9 @@ namespace DuiLib {
 		bHandled = FALSE;
 		}
 		if( bHandled ) return lRes;
+		DEBUG_INFO("\n");
 		if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
+		DEBUG_INFO("\n");
 		return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 	}
 
@@ -289,7 +291,7 @@ namespace DuiLib {
 
 	void CTBCIAMessageBox::Notify(TNotifyUI& msg)
 	{
-		std::map<CStdString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
+		std::map<CDuiString, int >::iterator iter = m_controlCallbackMap.find( msg.pSender->GetName() );
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
 			if( iter != m_controlCallbackMap.end() )
 				g_pluginParms->ExecuteCodeSegment( iter->second - 1, 0 );
@@ -402,7 +404,7 @@ namespace DuiLib {
 	{
 		SIZE szRoundCorner = m_pm.GetRoundCorner();
 		if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
-			CRect rcWnd;
+			CDuiRect rcWnd;
 			::GetWindowRect(*this, &rcWnd);
 			rcWnd.Offset(-rcWnd.left, -rcWnd.top);
 			rcWnd.right++; rcWnd.bottom++;
