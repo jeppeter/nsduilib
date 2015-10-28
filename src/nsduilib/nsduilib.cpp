@@ -286,6 +286,7 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	ZeroMemory(wParam, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(lParam, MAX_PATH*sizeof(TCHAR));
 
+	DEBUG_INFO("to send message\n");
 	popstring( msgID );
 	popstring( wParam );
 	popstring( lParam );

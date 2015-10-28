@@ -19,7 +19,7 @@
 #ReserveFile "${NSISDIR}\Plugins\nsDialogs.dll"
 #ReserveFile "${NSISDIR}\Plugins\nsExec.dll"
 #ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
-#ReserveFile "${NSISDIR}\Plugins\nsduilib.dll" ;调用我们的皮肤插件
+#
 
 ; 名称宏定义
 !define PRODUCT_NAME              "360Safe"
@@ -581,7 +581,7 @@ Function BuildShortCut
   ;开始菜单
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"       "$INSTDIR\${PRODUCT_MAIN_EXE}"
-  CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\卸载${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
+  CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\\u5378载${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
   ;桌面快捷方式
   StrCmp $DesktopIconState "1" "" +2
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
