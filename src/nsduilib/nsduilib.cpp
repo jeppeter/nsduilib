@@ -473,11 +473,8 @@ void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stack
 	MSG msg = { 0 };
 	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag ) 
 	{
-		DEBUG_INFO("\n");
 		::TranslateMessage(&msg);
-		DEBUG_INFO("\n");
 		::DispatchMessage(&msg);
-		DEBUG_INFO("\n");
 	}
 	DEBUG_INFO("\n");
 }

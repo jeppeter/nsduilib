@@ -58,8 +58,8 @@ namespace DuiLib {
 	void CSkinEngine::SaveToControlCallbackMap(CDuiString ctlName, int callback)
 	{
 	        //m_controlCallbackMap[ctlName] = callback;
-	        DEBUG_INFO("this 0x%p pname 0x%p pcode 0x%p\n",this,
-	                   this->m_pnamevecs,this->m_pcodevecs);
+	        DEBUG_INFO("this 0x%p pname 0x%p pcode 0x%p callback 0x%x\n",this,
+	                   this->m_pnamevecs,this->m_pcodevecs,callback);
 	        this->m_pnamevecs->push_back(ctlName);
 	        this->m_pcodevecs->push_back(callback);
         }
@@ -286,7 +286,6 @@ namespace DuiLib {
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		DEBUG_INFO("umsg 0x%x:%d wParam 0x%x lParam 0%x\n",uMsg,uMsg,wParam,lParam);
 		switch( uMsg ) {
 	case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 	case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
@@ -308,9 +307,7 @@ namespace DuiLib {
 		bHandled = FALSE;
 		}
 		if( bHandled ) return lRes;
-		DEBUG_INFO("\n");
 		if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
-		DEBUG_INFO("\n");
 		return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 	}
 
