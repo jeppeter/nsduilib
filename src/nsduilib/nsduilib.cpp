@@ -74,6 +74,7 @@ void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **st
 {
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
+	EXDLL_INIT();
 
 	popstring( controlName,sizeof(controlName));
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
@@ -87,6 +88,8 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 {
 	TCHAR controlName[MAX_PATH];
 	TCHAR fileName[MAX_PATH];
+	EXDLL_INIT();
+
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(fileName, MAX_PATH*sizeof(TCHAR));
 	popstring( controlName,sizeof(controlName) );
@@ -147,6 +150,7 @@ void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables,
 {
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
+	EXDLL_INIT();
 
 	popstring(controlName,sizeof(controlName));
 	int callbackID = popint();
@@ -160,6 +164,9 @@ void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 	TCHAR controlName[MAX_PATH];
 	TCHAR controlData[MAX_PATH];
 	TCHAR dataType[MAX_PATH];
+
+	EXDLL_INIT();
+
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(controlData, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
@@ -210,6 +217,9 @@ void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 {
 	TCHAR ctlName[MAX_PATH];
 	TCHAR dataType[MAX_PATH];
+
+	EXDLL_INIT();
+
 	ZeroMemory(ctlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(dataType, MAX_PATH*sizeof(TCHAR));
 	popstring( ctlName ,sizeof(ctlName));
@@ -235,6 +245,8 @@ void  TBCIACreatTimer(HWND hwndParent, int string_size, char *variables, stack_t
 	UINT callback;
 	UINT interval;
 
+	EXDLL_INIT();
+
 	callback = popint();
 	interval = popint();
 
@@ -247,6 +259,8 @@ void  TBCIACreatTimer(HWND hwndParent, int string_size, char *variables, stack_t
 void  TBCIAKillTimer(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	UINT id;
+	EXDLL_INIT();
+
 	id = popint();
 	KillTimer(g_pFrame->GetHWND(), id);
 }
@@ -281,6 +295,8 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	TCHAR msgID[MAX_PATH];
 	TCHAR wParam[MAX_PATH];
 	TCHAR lParam[MAX_PATH];
+
+	EXDLL_INIT();
 
  	ZeroMemory(msgID, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(wParam, MAX_PATH*sizeof(TCHAR));
@@ -362,6 +378,9 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 	TCHAR result[MAX_PATH];
 	TCHAR title[MAX_PATH];
 	LPITEMIDLIST resultPIDL;
+
+	EXDLL_INIT();
+
 	ZeroMemory(result, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(title, MAX_PATH*sizeof(TCHAR));
 
@@ -464,16 +483,13 @@ void StartUninstall(HWND hwndParent, int string_size, char *variables, stack_t *
 
 void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
-	DEBUG_INFO("\n");
 	ShowWindow( g_pFrame->GetHWND(), TRUE );
-	DEBUG_INFO("\n");
 	MSG msg = { 0 };
 	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag ) 
 	{
 		::TranslateMessage(&msg);
 		::DispatchMessage(&msg);
 	}
-	DEBUG_INFO("\n");
 }
 
 void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
@@ -483,6 +499,8 @@ void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, sta
 
 NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	EXDLL_INIT();
+
 	popstring( g_messageBoxLayoutFileName,sizeof(g_messageBoxLayoutFileName));
 
 	popstring( g_messageBoxTitleControlName,sizeof(g_messageBoxTitleControlName));
