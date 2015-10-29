@@ -20,7 +20,7 @@ int NSISCALL popstring_debug(TCHAR* str,int maxsize)
 	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
 	DEBUG_BUFFER(th->text,strlen(th->text));
 	//if (str) mbstowcs(str,th->text,strlen(th->text));
-	if (str) strncpy((char*)str,th->text,maxsize);
+	if (str) MultiByteToWideChar(CP_ACP,0,th->text,-1,str,maxsize / sizeof(TCHAR));
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
 	return 0;
@@ -34,7 +34,7 @@ int NSISCALL popstring(TCHAR* str,int maxsize)
 	th = (*g_stacktop);
 	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
 	//if (str) mbstowcs(str,th->text,strlen(th->text));
-	if (str) MultiByteToWideChar(CP_UTF8, 0, th->text,strlen(th->text), str,maxsize/sizeof(TCHAR));
+	if (str) MultiByteToWideChar(CP_ACP, 0, th->text,-1, str,maxsize/sizeof(TCHAR));
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
 	return 0;

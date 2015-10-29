@@ -288,8 +288,8 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 
 	DEBUG_INFO("to send message stringsize %d MAX_PATH %d\n",g_stringsize,MAX_PATH);
 	popstring( msgID,sizeof(msgID) );
-	popstring_debug( wParam,sizeof(wParam) );
-	popstring_debug( lParam ,sizeof(lParam));
+	popstring( wParam,sizeof(wParam) );
+	popstring( lParam ,sizeof(lParam));
 
 	if( _tcsicmp( msgID, _T("WM_TBCIAMIN")) == 0 )
 		::SendMessage( hwnd, WM_TBCIAMIN, (WPARAM)wParam, (LPARAM)lParam );
