@@ -82,7 +82,7 @@ void NSISCALL pushstring(TCHAR *str)
 	stack_t *th;
 	if (!g_stacktop) return;
 	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);	
-	WideCharToMultiByte(CP_UTF8,0,str,_tcslen(str),th->text,g_stringsize,NULL,NULL);
+	WideCharToMultiByte(CP_ACP,0,str,_tcslen(str),th->text,g_stringsize,NULL,NULL);
 	DEBUG_INFO("pushstring %s (%d)\n",th->text,strlen(th->text));
 	th->next = *g_stacktop;
 	*g_stacktop = th;
