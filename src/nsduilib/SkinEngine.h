@@ -9,7 +9,7 @@
 namespace DuiLib
 {
 
-class CSkinEngine : public CWindowWnd, public INotifyUI
+class CSkinEngine : public WindowImplBase
 {
 public:
     CSkinEngine() ;
@@ -26,6 +26,8 @@ public:
         }
 
     }
+    virtual CDuiString GetSkinFolder();
+    virtual CDuiString GetSkinFile();
 
     LPCTSTR GetWindowClassName() const
     {
@@ -37,7 +39,6 @@ public:
     }
     void OnFinalMessage(HWND /*hWnd*/)
     {
-        m_pm.RemoveNotifier( this );
         delete this;
     }
 
@@ -69,7 +70,6 @@ public:
     
 
 private:
-    CPaintManagerUI              m_pm;
     TCHAR                               m_skinXMLPath[MAX_PATH];
     std::map<CDuiString, int> m_controlCallbackMap;
     std::vector<CDuiString> *m_pnamevecs;

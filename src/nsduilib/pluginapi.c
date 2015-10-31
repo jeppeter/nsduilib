@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include "pluginapi.h"
-#include <output_debug.h>
+#include "output_debug.h"
 
 #pragma warning(disable:4996)
 

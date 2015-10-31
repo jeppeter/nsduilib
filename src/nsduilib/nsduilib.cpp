@@ -5,13 +5,14 @@
 #include <stdio.h>
 #include <atlconv.h>
 #include <string>
-#include <output_debug.h>
+#include "output_debug.h"
 using namespace DuiLib;
 
 extern HINSTANCE g_hInstance;
 extra_parameters* g_pluginParms;
 DuiLib::CSkinEngine* g_pFrame = NULL;
 BOOL g_bMSGLoopFlag = TRUE;
+BOOL g_bErrorExit=FALSE;
 std::map<HWND, WNDPROC> g_windowInfoMap;
 DuiLib::CDuiString g_tempParam = _T("");
 DuiLib::CDuiString g_installPageTabName = _T("");
@@ -44,6 +45,7 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		TCHAR skinPath[MAX_PATH];
 		TCHAR skinLayoutFileName[MAX_PATH];
 		TCHAR installPageTabName[MAX_PATH];
+		TCHAR guiname[MAX_PATH];
 		ZeroMemory(skinPath, MAX_PATH*sizeof(TCHAR));
 		ZeroMemory(skinLayoutFileName, MAX_PATH*sizeof(TCHAR));
 		ZeroMemory(installPageTabName, MAX_PATH*sizeof(TCHAR));
@@ -51,6 +53,7 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		popstring(skinPath,sizeof(skinPath));  // 皮肤路径
 		popstring(skinLayoutFileName,sizeof(skinLayoutFileName)); //皮肤文件
 		popstring( installPageTabName,sizeof(installPageTabName)); // 安装页面tab的名字
+		popstring(guiname,sizeof(guiname));
 
 		DuiLib::CPaintManagerUI::SetInstance(g_hInstance);
 		DuiLib::CPaintManagerUI::SetResourcePath( skinPath);
@@ -60,7 +63,7 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		g_pFrame = new DuiLib::CSkinEngine();
 		if( g_pFrame == NULL ) return;
 		g_pFrame->SetSkinXMLPath( skinLayoutFileName );
-		g_pFrame->Create( NULL, _T("360Safe安装包"), UI_WNDSTYLE_FRAME, WS_EX_STATICEDGE | WS_EX_APPWINDOW , 0, 0, 0, 0 );
+		g_pFrame->Create( NULL, guiname, UI_WNDSTYLE_FRAME, WS_EX_STATICEDGE | WS_EX_APPWINDOW );
 		g_pFrame->CenterWindow();
 		ShowWindow( g_pFrame->GetHWND(), FALSE );
 
@@ -79,37 +82,51 @@ void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **st
 	popstring( controlName,sizeof(controlName));
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pControl == NULL )
+	{
 		pushint( - 1 );
+		return;
+	}
 
 	pushint( 0 );
+	return ;
 }
 
 void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
 	TCHAR fileName[MAX_PATH];
+	FILE* infile=NULL;
+	TCHAR *ptchlicense=NULL;
+	char *pLicense = NULL;
+	char *pptr=NULL;
+	int leftsize = 0;
+	size_t ret;
+	BOOL bret;
 	EXDLL_INIT();
 
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(fileName, MAX_PATH*sizeof(TCHAR));
 	popstring( controlName,sizeof(controlName) );
 	popstring( fileName,sizeof(fileName));
-	CDuiString finalFileName = g_skinPath + _T("\\") + fileName;	
+	CDuiString finalFileName = fileName;
 	CRichEditUI* pRichEditControl = static_cast<CRichEditUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
 	if( pRichEditControl == NULL )
-		return;
+	{
+		goto fail;
+	}
 
 	// 读许可协议文件，append到richedit中
 	USES_CONVERSION;
-	FILE* infile;
-	TCHAR *ptchlicense=NULL;
-	char *pLicense = NULL;	
-	infile = fopen( T2A(finalFileName.GetData()), "r" );
+	infile = fopen( T2A(finalFileName.GetData()), "r+b" );
+	if (infile == NULL)
+	{
+		goto fail;
+	}
 	fseek( infile, 0,  SEEK_END );
 	int nSize = ftell(infile);
 	fseek(infile, 0, SEEK_SET);
-	pLicense = new char[nSize];
-	ptchlicense = new TCHAR[nSize+1];
+	pLicense = new char[nSize+1];
+	ptchlicense = new TCHAR[nSize+2];
 	if (pLicense == NULL || ptchlicense == NULL)
 	{
 		if (pLicense)
@@ -126,12 +143,37 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 		return;
 	}
 
-	ZeroMemory(pLicense, sizeof(char) * nSize);
+	ZeroMemory(pLicense, sizeof(char) * (nSize+1));
 	ZeroMemory(ptchlicense,sizeof(TCHAR)* (nSize + 1));
-	fread_s(pLicense, nSize, sizeof(char), nSize, infile);
+	pptr = pLicense;
+	leftsize = nSize;
+	DEBUG_INFO("openfile 0x%p size %d\n",infile,nSize);
+	while (leftsize > 0)
+	{
+		ret = fread_s(pptr, leftsize, sizeof(char), leftsize, infile);
+		if (ret < 0)
+		{
+			DEBUG_INFO("ret = %d\n",ret);
+			goto fail;
+		}
+		DEBUG_INFO("ret = %d\n",ret);
+		pptr += ret* sizeof(char);
+		leftsize -= (ret * sizeof(char));
+	}
 	/*now we change the text*/
 	//mbstowcs(ptchlicense,pLicense,nSize+1);
+#ifdef _UNICODE
+	DEBUG_INFO("\n");
+	pLicense[nSize] = 0x0;
+	bret = MultiByteToWideChar(CP_ACP,0,pLicense,nSize,ptchlicense,(nSize + 1));
+	if (!bret)
+	{
+		DEBUG_INFO("change license error %d\n",GetLastError());
+		goto fail;
+	}
+#else
 	memcpy(ptchlicense,pLicense,nSize);
+#endif
 	pRichEditControl->AppendText( ptchlicense);
 	if (pLicense != NULL)
 	{
@@ -144,6 +186,27 @@ void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **st
 		ptchlicense = NULL;
 	}
 	fclose( infile );
+	pushint(0);
+	return ;
+
+fail:
+	if (pLicense != NULL)
+	{
+		delete []pLicense;
+		pLicense = NULL;
+	}
+	if (ptchlicense != NULL)
+	{
+		delete []ptchlicense;
+		ptchlicense = NULL;
+	}
+	if (infile)
+	{
+		fclose( infile );
+		infile = NULL;
+	}
+	pushint(-1);	
+	return;
 }
 
 void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
@@ -330,7 +393,9 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 			pushint( -1 );
 	}
 	else if( _tcsicmp( msgID, _T("WM_TBCIASTARTINSTALL")) == 0 )
+	{
 		::SendMessage( hwnd, WM_TBCIASTARTINSTALL, (WPARAM)g_installPageTabName.GetData(), (LPARAM)lParam );
+	}
 	else if( _tcsicmp( msgID, _T("WM_TBCIASTARTUNINSTALL")) == 0 )
 		::SendMessage( hwnd, WM_TBCIASTARTUNINSTALL, (WPARAM)g_installPageTabName.GetData(), (LPARAM)lParam );
 	else if( _tcsicmp( msgID, _T("WM_TBCIAFINISHEDINSTALL")) == 0 )
@@ -340,7 +405,29 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 		COptionUI* pOption = static_cast<COptionUI*>(g_pFrame->GetPaintManager().FindControl( wParam ));
 		if( pOption == NULL )
 			return;
-		pushint( !pOption->IsSelected() );
+		DEBUG_INFO("selected %s\n",pOption->IsSelected() ? "yes" : "no");
+		pushint(  pOption->IsSelected() );
+	}
+	else if (_tcsicmp( msgID, _T("WM_TBCIASETSTATE")) == 0)
+	{
+		COptionUI* pOption = static_cast<COptionUI*>(g_pFrame->GetPaintManager().FindControl( wParam ));
+		if( pOption == NULL )
+			return;
+		if (_tcsicmp(lParam,_T("1"))== 0)
+		{
+			pOption->Selected(true);
+		}
+		else
+		{
+			pOption->Selected(false);
+		}
+		DEBUG_INFO("selected %s\n",pOption->IsSelected() ? "yes" : "no");
+		pOption->PaintStatusImage(g_pFrame->GetPaintManager().GetPaintDC());
+		pushint(  pOption->IsSelected() );
+	}
+	else if (_tcsicmp(msgID,_T("WM_TBCIAEXIT"))==0)
+	{
+		::SendMessage(hwnd,WM_CLOSE,0,0);
 	}
 	else if( _tcsicmp( msgID, _T("WM_TBCIAOPENURL")) == 0 )
 	{
@@ -485,16 +572,30 @@ void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stack
 {
 	ShowWindow( g_pFrame->GetHWND(), TRUE );
 	MSG msg = { 0 };
-	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag ) 
+	g_bMSGLoopFlag = TRUE;
+	g_bErrorExit = FALSE;
+	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag  && !g_bErrorExit) 
 	{
 		::TranslateMessage(&msg);
 		::DispatchMessage(&msg);
 	}
+
+	if (g_bErrorExit)
+	{
+		pushint(-1);
+	}
+	else
+	{
+		pushint(0);
+	}
+	return ;
 }
 
 void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
-	ExitProcess( 0 );
+	g_bErrorExit = TRUE;
+	DEBUG_INFO("\n");
+	//ExitProcess( 0 );
 }
 
 NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)

@@ -47,7 +47,7 @@
 //
 
 #include <Windows.h>
-#include <output_debug.h>
+#include "output_debug.h"
 
 HINSTANCE g_hInstance;
 
