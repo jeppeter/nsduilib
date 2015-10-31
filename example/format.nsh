@@ -2,12 +2,12 @@
 !ifndef __FORMAT_NSH__
 !define __FORMAT_NSH__
 
-!define NSD_Debug_out `System::Call kernel32::OutputDebugString(ts)`
+!define NSD1_Debug `System::Call kernel32::OutputDebugString(ts)`
 !include "LogicLib.nsh"
 !include "WordFunc.nsh"
 
 !macro DEBUG_INFO _Content
-       ${NSD_Debug_out} "${__FILE__}:${__LINE__} ${_Content}$\n"
+       ${NSD1_Debug} "${__FILE__}:${__LINE__} ${_Content}$\n"
 !macroend
 
 !macro FormatString _Result
@@ -40,7 +40,12 @@ ${__inner_out_${__MACRO__}}:
        MessageBox MB_OK ${_Message}
 ${__set_error_${__MACRO__}}:
        SetErrors
-       abort
+!ifdef __UNINSTALL__
+       call un.onUninstFailed
+!else
+       call .onInstFailed
+!endif
+       Quit
 !undef __set_error_${__MACRO__}       
 !macroend
 

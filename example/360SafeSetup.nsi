@@ -12,6 +12,7 @@
 !include "Library.nsh"
 !include "basehelp.nsh"
 !include "format.nsh"
+!include "nsduilib.nsh"
 
 !addplugindir "plugin"
 ; 引入的dll
@@ -122,11 +123,16 @@ UninstPage   custom     un.360SafeUninstall
 UninstPage   instfiles  "" un.UninstallShow
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Function AbortFunction
+  call .onInstFailed
+  quit
+FunctionEnd
+
 
 Function 360Safe
     !insertmacro DEBUG_INFO ""
    ;初始化窗口          
-   nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "InstallPackages.xml" "WizardTab"
+   nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "InstallPackages.xml" "WizardTab" "360SafeSetup"
    Pop $Dialog
    !insertmacro DEBUG_INFO ""
 
@@ -137,78 +143,23 @@ Function 360Safe
 
    ;全局按钮绑定函数
    ;最小化按钮绑定函数
-   nsduilib::FindControl "Wizard_MinBtn"
-   Pop $0
-   !insertmacro DEBUG_INFO "0 ($0)"
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have min button"
-   ${Else}
-  !insertmacro DEBUG_INFO ""
-	GetFunctionAddress $0 OnGlobalMinFunc
-  !insertmacro DEBUG_INFO ""
-	nsduilib::OnControlBindNSISScript "Wizard_MinBtn" $0
-  !insertmacro DEBUG_INFO ""
-   ${EndIf}
-   ;关闭按钮绑定函数
-   !insertmacro DEBUG_INFO ""
-   nsduilib::FindControl "Wizard_CloseBtn"
-   Pop $0
-   !insertmacro DEBUG_INFO ""
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have close button"
-   ${Else}
-	GetFunctionAddress $0 OnGlobalCancelFunc
-	nsduilib::OnControlBindNSISScript "Wizard_CloseBtn" $0
-   ${EndIf}
-    !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_MinBtn" "OnGlobalMinFunc"
+   !insertmacro BindControlFunction "Wizard_CloseBtn" "OnGlobalCancelFunc"
 
    ;----------------------------第一个页面-----------------------------------------------
    ; 显示licence
-   nsduilib::FindControl "LicenceRichEdit"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have LicenceRichEdit button"
-   ${Else}
-	nsduilib::ShowLicense "LicenceRichEdit" "Licence.txt"     ;"许可协议控件名字" "许可协议文件名字"
-   ${EndIf}
-    !insertmacro DEBUG_INFO ""
+   !insertmacro ShowLicense "LicenceRichEdit" "$temp\${PRODUCT_NAME_EN}Setup\res\License.txt"
 
    ;下一步按钮绑定函数
-   nsduilib::FindControl "Wizard_NextBtn4Page1"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_NextBtn4Page1 button"
-   ${Else}
-	GetFunctionAddress $0 OnNextBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_NextBtn4Page1"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "Wizard_NextBtn4Page1" "OnNextBtnFunc"
    ;取消按钮绑定函数
-   nsduilib::FindControl "Wizard_CancelBtn4Page1"
-   Pop $0
-   !insertmacro DEBUG_INFO "0 ($0)"
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_CancelBtn4Page1 button"
-   ${Else}
-	GetFunctionAddress $0 OnGlobalCancelFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_CancelBtn4Page1"  $0
-   ${EndIf}
-
-  !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_CancelBtn4Page1" "OnGlobalCancelFunc"
    
    ;----------------------------第二个页面-----------------------------------------------
    ;安装路径编辑框设定数据
-   nsduilib::FindControl "Wizard_InstallPathEdit4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_InstallPathBtn4Page2 button"
-   ${Else}
-	;nsduilib::SetText2Control "Wizard_InstallPathEdit4Page2"  $installPath
-	nsduilib::SetControlData "Wizard_InstallPathEdit4Page2"  $installPath "text"
+   !insertmacro BindControlFunction "Wizard_InstallPathEdit4Page2" "OnTextChangeFunc"	
+   nsduilib::SetControlData "Wizard_InstallPathEdit4Page2"  $installPath "text"
 
-	GetFunctionAddress $0 OnTextChangeFunc
-	nsduilib::OnControlBindNSISScript "Wizard_InstallPathEdit4Page2" $0
-   ${EndIf}
-  !insertmacro DEBUG_INFO ""
 
    ${If} $InstallState == "Cover"
 	ReadRegStr $LocalPath HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "InstallLocation"
@@ -219,102 +170,26 @@ Function 360Safe
 	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "覆盖" "text"
    ${EndIf}
 
-  !insertmacro DEBUG_INFO ""
    
    ;可用磁盘空间设定数据
-   nsduilib::FindControl "Wizard_UsableSpaceLab4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_UsableSpaceLab4Page2 button"
-   ${Else}
-	nsduilib::SetControlData "Wizard_UsableSpaceLab4Page2"  $FreeSpaceSize  "text"
-   ${EndIf}   
-  !insertmacro DEBUG_INFO ""
+   !insertmacro SetControlText "Wizard_UsableSpaceLab4Page2" "$FreeSpaceSize"
 
    ;安装路径浏览按钮绑定函数
-   nsduilib::FindControl "Wizard_InstallPathBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_InstallPathBtn4Page2 button"
-   ${Else}
-	GetFunctionAddress $0 OnInstallPathBrownBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_InstallPathBtn4Page2"  $0
-   ${EndIf}   
-     !insertmacro DEBUG_INFO ""
-
-   ;创建桌面快捷方式绑定函数
-   nsduilib::FindControl "Wizard_ShortCutBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_ShortCutBtn4Page2 button"
-   ${Else}
-        StrCpy $DesktopIconState "1"
-        GetFunctionAddress $0 OnDesktopIconStateFunc
-        nsduilib::OnControlBindNSISScript "Wizard_ShortCutBtn4Page2"  $0
-   ${EndIf}
-     !insertmacro DEBUG_INFO ""
-
-   ;添加到快捷启动栏绑定函数
-   nsduilib::FindControl "Wizard_QuickLaunchBarBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_QuickLaunchBarBtn4Page2 button"
-   ${Else}
-        StrCpy $FastIconState "1"
-	GetFunctionAddress $0 OnFastIconStateFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_QuickLaunchBarBtn4Page2"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
-
+   !insertmacro BindControlFunction "Wizard_InstallPathBtn4Page2" "OnInstallPathBrownBtnFunc"
 
    ;上一步按钮绑定函数
-   nsduilib::FindControl "Wizard_BackBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_BackBtn4Page2 button"
-   ${Else}
-	GetFunctionAddress $0 OnBackBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_BackBtn4Page2"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_BackBtn4Page2" "OnBackBtnFunc"
 
    ;开始安装按钮绑定函数
-   nsduilib::FindControl "Wizard_StartInstallBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_StartInstallBtn4Page2 button"
-   ${Else}
-	GetFunctionAddress $0 OnStartInstallBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_StartInstallBtn4Page2"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_StartInstallBtn4Page2" "OnStartInstallBtnFunc"
 
 
    ;取消按钮绑定函数
-   nsduilib::FindControl "Wizard_CancelBtn4Page2"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_CancelBtn4Page2 button"
-   ${Else}
-	GetFunctionAddress $0 OnGlobalCancelFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_CancelBtn4Page2"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_CancelBtn4Page2" "OnGlobalCancelFunc"
 
    ;----------------------------第三个页面-----------------------------------------------
    ;取消按钮绑定函数
-   nsduilib::FindControl "Wizard_CancelBtn4Page3"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_CancelBtn4Page3 button"
-   ${Else}
-	GetFunctionAddress $0 OnGlobalCancelFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_CancelBtn4Page3"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "Wizard_CancelBtn4Page3" "OnGlobalCancelFunc"
 
    ;切换背景绑定函数
    nsduilib::FindControl "Wizard_Background4Page3"
@@ -329,59 +204,34 @@ Function 360Safe
 
       !insertmacro DEBUG_INFO ""
      
-   ;----------------------------第四个页面-----------------------------------------------
-   nsduilib::FindControl "Wizard_Runing360SafeBtn"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_Runing360SafeBtn button"
-   ${Else}
-        nsduilib::OnControlBindNSISScript "Wizard_Runing360SafeBtn"  $0
-   ${EndIf}
-
-   nsduilib::FindControl "Wizard_BootRuning360SafeBtn"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_BootRuning360SafeBtn button"
-   ${Else}
-        nsduilib::OnControlBindNSISScript "Wizard_BootRuning360SafeBtn"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   ;----------------------------第四个页面-----------------------------------------------  
 
    ;完成按钮绑定函数
-   nsduilib::FindControl "Wizard_FinishedBtn4Page4"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_FinishedBtn4Page4 button"
-   ${Else}
-	GetFunctionAddress $0 OnFinishedBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_FinishedBtn4Page4"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_FinishedBtn4Page4" "OnFinishedBtnFunc"
 
    ;链接按钮绑定函数
-   nsduilib::FindControl "Wizard_110Btn4Page4"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_110Btn4Page4 button"
-   ${Else}
-	GetFunctionAddress $0 OnLinkBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_110Btn4Page4"  $0
-   ${EndIf}
-
-     !insertmacro DEBUG_INFO ""
+   !insertmacro BindControlFunction "Wizard_110Btn4Page4" "OnLinkBtnFunc"
 
    ;---------------------------------显示------------------------------------------------
    nsduilib::ShowPage
-
-   !insertmacro DEBUG_INFO ""
+   pop $R0
+   !insertmacro DEBUG_INFO "GetShowPage Ret ($R0)"
+   ${If} $R0 <> "0"
+      !insertmacro DEBUG_INFO " will abort"
+      Call AbortFunction
+   ${EndIF}
 
 FunctionEnd
 
+Function un.AbortFunction
+  call un.onUserAbort
+  quit
+FunctionEnd
+
+
 Function un.360SafeUninstall
    ;初始化窗口          
-   nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "UninstallPackages.xml" "WizardTab"
+   nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "UninstallPackages.xml" "WizardTab" "360SafeUninstaller"
    Pop $Dialog
 
    ;初始化MessageBox窗口
@@ -390,44 +240,16 @@ Function un.360SafeUninstall
 
    ;全局按钮绑定函数
    ;最小化按钮绑定函数
-   nsduilib::FindControl "Wizard_MinBtn"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have min button"
-   ${Else}
-	GetFunctionAddress $0 un.OnGlobalMinFunc
-	nsduilib::OnControlBindNSISScript "Wizard_MinBtn" $0
-   ${EndIf}
+   !insertmacro BindControlFunction "Wizard_MinBtn" "un.OnGlobalMinFunc"
    ;关闭按钮绑定函数
-   nsduilib::FindControl "Wizard_CloseBtn"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have close button"
-   ${Else}
-	GetFunctionAddress $0 un.OnGlobalCancelFunc
-	nsduilib::OnControlBindNSISScript "Wizard_CloseBtn" $0
-   ${EndIf}
+   !insertmacro BindControlFunction "Wizard_CloseBtn" "un.OnGlobalCancelFunc"
 
    ;-------------------------------------确定卸载页面------------------------------------
    ;开始卸载按钮绑定函数
-   nsduilib::FindControl "UninstallBtn4UninstallPage"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have UninstallBtn4UninstallPage button"
-   ${Else}
-	GetFunctionAddress $0 un.OnStartUninstallBtnFunc    
-        nsduilib::OnControlBindNSISScript "UninstallBtn4UninstallPage"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "UninstallBtn4UninstallPage" "un.OnStartUninstallBtnFunc"
 
    ;取消按钮绑定函数
-   nsduilib::FindControl "CancelBtn4UninstallPage"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have CancelBtn4UninstallPage button"
-   ${Else}
-	GetFunctionAddress $0 un.OnGlobalCancelFunc    
-        nsduilib::OnControlBindNSISScript "CancelBtn4UninstallPage"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "CancelBtn4UninstallPage" "un.OnGlobalCancelFunc"
 
    ;切换背景绑定函数
    nsduilib::FindControl "Wizard_BackgroundUninstallPage"
@@ -442,26 +264,18 @@ Function un.360SafeUninstall
 
     ;--------------------------------卸载完成页面----------------------------------------
    ;完成按钮绑定函数
-   nsduilib::FindControl "FinishedBtn4UninstallPage"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have FinishedBtn4UninstallPage button"
-   ${Else}
-	GetFunctionAddress $0 un.OnUninstallFinishedBtnFunc    
-        nsduilib::OnControlBindNSISScript "FinishedBtn4UninstallPage"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "FinishedBtn4UninstallPage" "un.OnUninstallFinishedBtnFunc"
 
    ;链接按钮绑定函数
-   nsduilib::FindControl "Wizard_110Btn4UninstallPage"
-   Pop $0
-   ${If} $0 == "-1"
-	MessageBox MB_OK "Do not have Wizard_110Btn4UninstallPage button"
-   ${Else}
-	GetFunctionAddress $0 un.OnLinkBtnFunc    
-        nsduilib::OnControlBindNSISScript "Wizard_110Btn4UninstallPage"  $0
-   ${EndIf}
+   !insertmacro BindControlFunction "Wizard_110Btn4UninstallPage" "un.OnLinkBtnFunc"
 
-   nsduilib::ShowPage   
+   nsduilib::ShowPage
+   pop $R0
+   !insertmacro DEBUG_INFO "GetShowPage Ret ($R0)"
+   ${If} $R0 <> "0"
+      !insertmacro DEBUG_INFO " will abort"
+      Call un.AbortFunction
+   ${EndIF}
 
 FunctionEnd
 
@@ -583,10 +397,12 @@ Function BuildShortCut
   CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"       "$INSTDIR\${PRODUCT_MAIN_EXE}"
   CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\卸载${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
   ;桌面快捷方式
+  Call QueryDesktopIconState
   StrCmp $DesktopIconState "1" "" +2
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
     
   ;快速启动
+  call QueryFastIconState
   StrCmp $FastIconState "1" "" +2
   CreateShortCut "$QUICKLAUNCH\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
   
@@ -762,7 +578,7 @@ Function OnChangeFunc
 
 FunctionEnd
 
-Function OnDesktopIconStateFunc
+Function QueryDesktopIconState
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPTIONSTATE "Wizard_ShortCutBtn4Page2" ""
    Pop $0
    ${If} $0 == "1"
@@ -772,7 +588,7 @@ Function OnDesktopIconStateFunc
    ${EndIf}
 FunctionEnd
 
-Function OnFastIconStateFunc
+Function QueryFastIconState
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPTIONSTATE "Wizard_QuickLaunchBarBtn4Page2" ""
    Pop $1
    ${If} $1 == "1"
@@ -888,4 +704,13 @@ Function un.OnChangeFunc
         StrCpy $changebkimage4UninstallIndex "0"
 	nsduilib::SetControlData "Wizard_BackgroundUninstallPage" "内嵌背景4Page3_2.png" "bkimage"
    ${EndIf}
+FunctionEnd
+
+Function un.onUserAbort
+FunctionEnd
+
+Function un.onUninstFailed
+FunctionEnd
+
+Function .onInstFailed
 FunctionEnd
