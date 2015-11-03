@@ -53,8 +53,8 @@
                         <Button name="Wizard_CancelBtn4Page2" text="取消" visible="true" float="true" pos="378,279,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hot.png" pushedimage="btn_hot.png" />
                         <Label name="LabelUI6" visible="true" float="true" pos="142,90,0,0" width="318" height="1" bkcolor="#FFE1E1E1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Label name="LabelUI7" visible="true" float="true" pos="142,191,0,0" width="318" height="1" bkcolor="#FFE1E1E0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Option name="Wizard_QuickLaunchBarBtn4Page2"  selected="true" visible="true" float="true" pos="63,211,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="unsel.png" selectedimage="sel.png" />
-                        <Option name="Wizard_ShortCutBtn4Page2"  selected="true" visible="true" float="true" pos="63,236,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="unsel.png" selectedimage="sel.png" />
+                        <Option name="Wizard_QuickLaunchBarBtn4Page2"  selected="true" visible="true" float="true" pos="63,211,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" selected="true" normalimage="unsel.png" selectedimage="sel.png" />
+                        <Option name="Wizard_ShortCutBtn4Page2"  selected="true" visible="true" float="true" pos="63,236,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" selected="true" normalimage="unsel.png" selectedimage="sel.png" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI7" width="503" height="330">
                         <VerticalLayout name="VerticalLayoutUI32" width="503" height="73">
@@ -71,11 +71,11 @@
                             <Label name="StepLab" text="欢迎 &gt; 选项 &gt; 安装 &gt; &lt;b&gt;完成&lt;/b&gt;" float="true" pos="336,55,0,0" width="158" height="19" textcolor="#000B6C9E" disabledtextcolor="#FFA7A6AA" font="0" showhtml="true" />
                         </VerticalLayout>
                         <Label name="LabelUI8" text="360Safe已经成功安装！" float="true" pos="65,89,0,0" width="206" height="23" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Option name="Wizard_Runing360SafeBtn" float="true" pos="65,126,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="sel.png" selectedimage="unsel.png" />
-                        <Option name="Wizard_BootRuning360SafeBtn" float="true" pos="65,152,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="sel.png" selectedimage="unsel.png" />
-                        <Label name="LabelUI11" text="开机启动淘宝安全中心" float="true" pos="87,151,0,0" width="160" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Option name="Wizard_Runing360SafeBtn" float="true" pos="65,126,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" selected="true" normalimage="unsel.png" selectedimage="sel.png" />
+                        <Option name="Wizard_BootRuning360SafeBtn" float="true" pos="65,152,0,0" width="16" height="16" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" selected="true" normalimage="unsel.png" selectedimage="sel.png" />
+                        <Label name="LabelUI11" text="开机启动360安全中心" float="true" pos="87,151,0,0" width="160" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Button name="Wizard_FinishedBtn4Page4" text="完成" float="true" pos="391,268,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hot.png" pushedimage="btn_hot.png" />
-                        <Label name="LabelUI9" text="欢迎登录官方网站了解更多安全产品介绍 &lt;u&gt;&lt;c #00ff8000&gt;http://110.taobao.com&lt;/c&gt;&lt;/u&gt;" float="true" pos="32,276,0,0" width="380" height="18" textcolor="#005A5A5A" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+                        <Label name="LabelUI9" text="欢迎登录了解更多介绍 &lt;u&gt;&lt;c #00ff8000&gt;https://github.com/jeppeter/nsduilib&lt;/c&gt;&lt;/u&gt;" float="true" pos="32,276,0,0" width="380" height="18" textcolor="#005A5A5A" disabledtextcolor="#FFA7A6AA" showhtml="true" />
                         <Label name="LabelUI10" text="立即运行360Safe" float="true" pos="87,125,0,0" width="160" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Button name="Wizard_110Btn4Page4" float="true" pos="248,276,0,0" width="116" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                     </VerticalLayout>

@@ -28,6 +28,9 @@ public:
     }
     virtual CDuiString GetSkinFolder();
     virtual CDuiString GetSkinFile();
+    virtual UILIB_RESOURCETYPE GetResourceType() const;
+    virtual CDuiString GetZIPFileName() const;
+    void SetZipFile(LPCTSTR zipname);
 
     LPCTSTR GetWindowClassName() const
     {
@@ -71,6 +74,8 @@ public:
 
 private:
     TCHAR                               m_skinXMLPath[MAX_PATH];
+    UILIB_RESOURCETYPE                  m_restype;
+    TCHAR                               m_zipname[MAX_PATH];
     std::map<CDuiString, int> m_controlCallbackMap;
     std::vector<CDuiString> *m_pnamevecs;
     std::vector<int> *m_pcodevecs;

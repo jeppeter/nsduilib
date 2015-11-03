@@ -18,6 +18,7 @@ namespace DuiLib {
 	{
 		this->m_pcodevecs = new std::vector<int>();
 		this->m_pnamevecs = new std::vector<CDuiString>();
+		this->m_restype = UILIB_FILE;
 	}
 
 	CDuiString CSkinEngine::GetSkinFile()
@@ -29,6 +30,25 @@ namespace DuiLib {
 	{
 		return _T("");
 	}
+
+	void CSkinEngine::SetZipFile(LPCTSTR zipfile)
+	{
+	    _tcsncpy(this->m_zipname,zipfile,sizeof(this->m_zipname)/sizeof(TCHAR));
+	    this->m_restype = UILIB_ZIP;
+	    return ;
+	}
+
+	CDuiString CSkinEngine::GetZIPFileName() const
+	{
+	    return this->m_zipname;
+	}
+
+
+	UILIB_RESOURCETYPE CSkinEngine::GetResourceType() const
+	{
+	    return this->m_restype;
+	}
+
 	void CSkinEngine::Notify(TNotifyUI& msg)
 	{
 		CDuiString name = msg.pSender->GetName();

@@ -28,7 +28,7 @@
                     <VerticalLayout name="VerticalLayoutUI14" width="503" height="330">
                         <Label name="LabelUI1" text="360Safe已从您的计算机中移除。" float="true" pos="32,36,0,0" width="254" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Label name="LabelUI11" text="请点击“完成”退出。" float="true" pos="32,71,0,0" width="258" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Label name="LabelUI9" text="欢迎登录官方网站了解更多安全产品介绍 &lt;u&gt;&lt;c #00ff8000&gt;http://110.taobao.com&lt;/c&gt;&lt;/u&gt;" float="true" pos="32,276,0,0" width="380" height="18" textcolor="#005A5A5A" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+                        <Label name="LabelUI9" text="欢迎网站了解更多介绍 &lt;u&gt;&lt;c #00ff8000&gt;https://github.com/jeppeter/nsduilib&lt;/c&gt;&lt;/u&gt;" float="true" pos="32,276,0,0" width="380" height="18" textcolor="#005A5A5A" disabledtextcolor="#FFA7A6AA" showhtml="true" />
                         <Button name="Wizard_110Btn4UninstallPage" float="true" pos="248,276,0,0" width="116" height="18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                         <Button name="FinishedBtn4UninstallPage" text="完成" float="true" pos="390,271,0,0" width="80" height="28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hot.png" pushedimage="btn_hot.png" />
                     </VerticalLayout>

@@ -15,6 +15,8 @@
 !include "nsduilib.nsh"
 
 !addplugindir "plugin"
+
+!define  AD_URL "https://github.com/jeppeter/nsduilib"
 ; 引入的dll
 #ReserveFile "${NSISDIR}\Plugins\system.dll"
 #ReserveFile "${NSISDIR}\Plugins\nsDialogs.dll"
@@ -148,7 +150,7 @@ Function 360Safe
 
    ;----------------------------第一个页面-----------------------------------------------
    ; 显示licence
-   !insertmacro ShowLicense "LicenceRichEdit" "$temp\${PRODUCT_NAME_EN}Setup\res\License.txt"
+   !insertmacro ShowLicense "LicenceRichEdit" "$temp\${PRODUCT_NAME_EN}Setup\res\Licence.txt"
 
    ;下一步按钮绑定函数
    !insertmacro BindControlFunction "Wizard_NextBtn4Page1" "OnNextBtnFunc"
@@ -286,7 +288,7 @@ Function .onInit
   GetTempFileName $0
   StrCpy $360Safetemp $0
   Delete $0
-  SetOutPath $temp\${PRODUCT_NAME_EN}Setup\res
+  SetOutPath "$temp\${PRODUCT_NAME_EN}Setup\res"
   File ".\setup res\*.png"
   File ".\setup res\*.txt"
   File ".\setup res\*.xml"
@@ -398,11 +400,13 @@ Function BuildShortCut
   CreateShortCut  "$SMPROGRAMS\${PRODUCT_NAME}\卸载${PRODUCT_NAME}.lnk"   "$INSTDIR\Uninstall.exe"   
   ;桌面快捷方式
   Call QueryDesktopIconState
+  !insertmacro DEBUG_INFO "DesktopIconState ($DesktopIconState)"
   StrCmp $DesktopIconState "1" "" +2
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
     
   ;快速启动
   call QueryFastIconState
+  !insertmacro DEBUG_INFO "FastIconState ($FastIconState)"
   StrCmp $FastIconState "1" "" +2
   CreateShortCut "$QUICKLAUNCH\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}"
   
@@ -507,6 +511,7 @@ FunctionEnd
 Function OnFinishedBtnFunc
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPTIONSTATE "Wizard_Runing360SafeBtn" ""
    Pop $0
+   !insertmacro DEBUG_INFO "running 360 ($0)"
    ${If} $0 == "1"
      StrCpy $RunNow "1"
    ${Else}
@@ -516,11 +521,13 @@ Function OnFinishedBtnFunc
    ;开机运行
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPTIONSTATE "Wizard_BootRuning360SafeBtn" ""
    Pop $0
+   !insertmacro DEBUG_INFO "Bootrunning ($0)"
    ${If} $0 == "1"
       ;CreateShortCut "$SMSTARTUP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_MAIN_EXE}" "" "$INSTDIR\${PRODUCT_MAIN_EXE}" 0
       WriteRegStr HKLM  "Software\Microsoft\Windows\CurrentVersion\Run" "360Safe"  "$INSTDIR\${PRODUCT_MAIN_EXE} -autorun"
    ${EndIf}
 
+   !insertmacro DEBUG_INFO "runnow ($RunNow)"
    call RunAfterInstall
    nsduilib::TBCIAKillTimer $timerID
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAFINISHEDINSTALL
@@ -529,11 +536,11 @@ FunctionEnd
 Function un.OnUninstallFinishedBtnFunc
    DeleteRegValue HKLM  "Software\Microsoft\Windows\CurrentVersion\Run" "360Safe"
    nsduilib::TBCIASendMessage $Dialog WM_TBCIAFINISHEDINSTALL
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "http://110.taobao.com"
+   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "${AD_URL}"
 FunctionEnd
 
 Function OnLinkBtnFunc
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "http://110.taobao.com"
+   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "${AD_URL}"
    Pop $0
    ${If} $0 == "url error"
      MessageBox MB_OK "url error"
@@ -689,7 +696,7 @@ Function un.UninstallShow
 FunctionEnd
 
 Function un.OnLinkBtnFunc
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "http://safe.taobao.com"
+   nsduilib::TBCIASendMessage $Dialog WM_TBCIAOPENURL "${AD_URL}"
    Pop $0
    ${If} $0 == "url error"
      MessageBox MB_OK "url error"

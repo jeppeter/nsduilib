@@ -6,6 +6,7 @@
 #include <atlconv.h>
 #include <string>
 #include "output_debug.h"
+#include <Shlwapi.h>
 using namespace DuiLib;
 
 extern HINSTANCE g_hInstance;
@@ -34,18 +35,20 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
 	return 0;
 }
 
-void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	DEBUG_INFO("\n");
 	g_pluginParms = extra;
 	EXDLL_INIT();
 	extra->RegisterPluginCallback(g_hInstance, PluginCallback);
 	DEBUG_INFO("\n");
+	USES_CONVERSION;
 	{
 		TCHAR skinPath[MAX_PATH];
 		TCHAR skinLayoutFileName[MAX_PATH];
 		TCHAR installPageTabName[MAX_PATH];
 		TCHAR guiname[MAX_PATH];
+		LPTSTR pZip=NULL,pDir=NULL;
 		ZeroMemory(skinPath, MAX_PATH*sizeof(TCHAR));
 		ZeroMemory(skinLayoutFileName, MAX_PATH*sizeof(TCHAR));
 		ZeroMemory(installPageTabName, MAX_PATH*sizeof(TCHAR));
@@ -56,12 +59,39 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 		popstring(guiname,sizeof(guiname));
 
 		DuiLib::CPaintManagerUI::SetInstance(g_hInstance);
-		DuiLib::CPaintManagerUI::SetResourcePath( skinPath);
+		/*now to set for the zip file*/
+
 		g_installPageTabName = installPageTabName;
 		g_skinPath = skinPath;
 
 		g_pFrame = new DuiLib::CSkinEngine();
-		if( g_pFrame == NULL ) return;
+		if( g_pFrame == NULL )
+		{
+			pushint(0);
+			return;
+		}
+        pZip = StrStrI(skinPath,_T(".zip"));
+        if (pZip && pZip[4] == 0x0 )
+        {
+            pDir =  wcsrchr(skinPath,L'\\');
+            if (pDir == NULL)
+            {   
+                g_pFrame->SetZipFile(skinPath);
+                DEBUG_INFO("set zip file %s\n",T2A(skinPath));
+            }
+            else
+            {
+                *pDir = 0x0;
+                pDir ++;
+                CPaintManagerUI::SetResourcePath(skinPath);
+                g_pFrame->SetZipFile(pDir);
+                DEBUG_INFO("set resource path %s zip %s\n",T2A(skinPath),T2A(pDir));
+            }
+        }
+        else
+        {
+            CPaintManagerUI::SetResourcePath(skinPath);
+        }
 		g_pFrame->SetSkinXMLPath( skinLayoutFileName );
 		g_pFrame->Create( NULL, guiname, UI_WNDSTYLE_FRAME, WS_EX_STATICEDGE | WS_EX_APPWINDOW );
 		g_pFrame->CenterWindow();
@@ -73,7 +103,7 @@ void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stac
 	DEBUG_INFO("\n");
 }
 
-void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
@@ -91,7 +121,7 @@ void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **st
 	return ;
 }
 
-void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void ShowLicense(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
 	TCHAR fileName[MAX_PATH];
@@ -209,7 +239,7 @@ fail:
 	return;
 }
 
-void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
 	ZeroMemory(controlName, MAX_PATH*sizeof(TCHAR));
@@ -222,7 +252,7 @@ void  OnControlBindNSISScript(HWND hwndParent, int string_size, char *variables,
 	DEBUG_INFO("\n");
 }
 
-void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR controlName[MAX_PATH];
 	TCHAR controlData[MAX_PATH];
@@ -276,7 +306,7 @@ void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t 
 	}
 }
 
-void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	TCHAR ctlName[MAX_PATH];
 	TCHAR dataType[MAX_PATH];
@@ -303,7 +333,7 @@ void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 	g_pluginParms->ExecuteCodeSegment(idEvent - 1, 0);
 }
 
-void  TBCIACreatTimer(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  TBCIACreatTimer(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	UINT callback;
 	UINT interval;
@@ -319,7 +349,7 @@ void  TBCIACreatTimer(HWND hwndParent, int string_size, char *variables, stack_t
 	SetTimer( g_pFrame->GetHWND(), callback, interval, TimerProc );
 }
 
-void  TBCIAKillTimer(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  TBCIAKillTimer(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	UINT id;
 	EXDLL_INIT();
@@ -352,7 +382,7 @@ UINT  TBCIAMessageBox( HWND hwndParent, LPCTSTR lpTitle, LPCTSTR lpText )
 	return IDNO;
 }
 
-void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	HWND hwnd = (HWND)popint();
 	TCHAR msgID[MAX_PATH];
@@ -388,6 +418,17 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 		{
 			pushint( 0 );
 			::SendMessage( hwnd, WM_TBCIACLOSE, (WPARAM)wParam, (LPARAM)lParam );
+		}
+		else
+			pushint( -1 );
+	}
+	else if (_tcsicmp( msgID, _T("WM_QAUERYCANCEL")) == 0)
+	{
+		LPCTSTR lpTitle = (LPCTSTR)wParam;
+		LPCTSTR lpText = (LPCTSTR)lParam;
+		if( IDYES == MessageBox( hwnd, lpText, lpTitle, MB_YESNO)/*TBCIAMessageBox( hwnd, lpTitle, lpText )*/)
+		{
+			pushint( 0 );
 		}
 		else
 			pushint( -1 );
@@ -432,7 +473,8 @@ void  TBCIASendMessage(HWND hwndParent, int string_size, char *variables, stack_
 	else if( _tcsicmp( msgID, _T("WM_TBCIAOPENURL")) == 0 )
 	{
 		CDuiString url = (CDuiString)wParam;
-		if( url.Find( _T("http://") ) == -1 )
+		if( url.Find( _T("https://") ) == -1  &&
+			url.Find(_T("http://")) == -1)
 		{
 			pushstring( _T("url error") );
 			return;
@@ -459,7 +501,7 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData)
 	return 0;
 }
 
-void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
 	BROWSEINFO bi;
 	TCHAR result[MAX_PATH];
@@ -479,7 +521,8 @@ void SelectFolderDialog(HWND hwndParent, int string_size, char *variables, stack
 #ifndef BIF_NEWDIALOGSTYLE
 #define BIF_NEWDIALOGSTYLE 0x0040
 #endif
-	bi.ulFlags = BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE | BIF_NONEWFOLDERBUTTON;
+	//bi.ulFlags = BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE | BIF_NONEWFOLDERBUTTON;
+	bi.ulFlags = BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE ;
 	bi.lpfn = BrowseCallbackProc;
 	bi.lParam = NULL;
 	bi.iImage = 0;
@@ -507,8 +550,10 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 {
 	BOOL res = 0;
 	std::map<HWND, WNDPROC>::iterator iter = g_windowInfoMap.find( hwnd );
+	//DEBUG_INFO("hwnd 0x%x message 0x%x wparam 0x%x lparam 0x%x\n",hwnd,message,wParam,lParam);
 	if( iter != g_windowInfoMap.end() )
 	{
+
  		if (message == WM_PAINT)
  		{
  			ShowWindow( hwnd, SW_HIDE );
@@ -558,18 +603,21 @@ void InstallCore( HWND hwndParent )
 	g_windowInfoMap[hInstallDetailHWND] = (WNDPROC) SetWindowLong(hInstallDetailHWND, GWL_WNDPROC, (long) TBCIAWindowProc);
 }
 
-void StartInstall(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void StartInstall(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	EXDLL_INIT();
 	InstallCore( hwndParent );
 }
 
-void StartUninstall(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void StartUninstall(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	EXDLL_INIT();
 	InstallCore( hwndParent );
 }
 
-void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	EXDLL_INIT();
 	ShowWindow( g_pFrame->GetHWND(), TRUE );
 	MSG msg = { 0 };
 	g_bMSGLoopFlag = TRUE;
@@ -591,11 +639,14 @@ void ShowPage(HWND hwndParent, int string_size, char *variables, stack_t **stack
 	return ;
 }
 
-void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+NSDUILIB_API void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+	TCHAR hwnd[MAX_PATH];
+	EXDLL_INIT();
+	popstring(hwnd,sizeof(hwnd));
 	g_bErrorExit = TRUE;
-	DEBUG_INFO("\n");
-	//ExitProcess( 0 );
+	DEBUG_INFO("exit skin engine\n");
+	return ;
 }
 
 NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
