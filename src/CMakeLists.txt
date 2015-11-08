@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 2.8) 
+
+if (MSVC)
+	message(STATUS "defined MSVC")
+endif(MSVC)
+
 include(cmake/functions.cmake)
+
 message(STATUS "CMAKE_C_COMPILER_ID " ${CMAKE_C_COMPILER_ID})
 message(STATUS "CMAKE_CXX_COMPILER_VERSION " ${CMAKE_CXX_COMPILER_VERSION})
 
