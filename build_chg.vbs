@@ -1,66 +1,46 @@
 
 Option Explicit
 
-dim stderr,stdout,fso
+sub includeFile (fSpec)
+    dim fileSys, file, fileData
+    set fileSys = createObject ("Scripting.FileSystemObject")
+    set file = fileSys.openTextFile (fSpec)
+    fileData = file.readAll ()
+    file.close
+    executeGlobal fileData
+    set file = nothing
+    set fileSys = nothing
+end sub
 
-Set fso = CreateObject ("Scripting.FileSystemObject") 
-Set stdout = fso.GetStandardStream (1) 
-Set stderr = fso.GetStandardStream (2) 
-
-Function XmlSetValueChilds(parent,xpath,value)
-	dim nodes,nd
-	set nodes = parent.selectNodes(xpath)
-	for each nd in nodes
-		nd.text = value
-	Next
-End Function
-
-Function XmlGetValueChilds(parent,xpath)
-	dim nodes,nd
-	set nodes = parent.selectNodes(xpath)
-	for each nd in nodes
-		stdout.WriteLine("[" &xpath& "]="& nd.text)
-	Next
-End Function
-
-Function XmlFindValueNode(parent,xpath,attrname,regexp)
-	dim nodes,nd,attrval
-	set nodes = parent.selectNodes(xpath)
-	For Each nd in nodes
-		attrval = nd.getAttribute(attrname)
-		stdout.writeline("["& xpath &"]@[" & attrname & "] = " & attrval )
-	Next
-End Function
-
-
+includeFile "xmlfunc.vbs"
 
 if wscript.Arguments.length < 1 Then
-	stderr.WriteLine("build_chg.vbs vcxproj")
+	Wscript.stderr.WriteLine("build_chg.vbs vcxproj")
 	wscript.Quit(4)
 End If
 
-dim xmldom,root
+dim xmldom,root,reg,fnd,newelm,retval
 
-set xmldom = CreateObject("Microsoft.XMLDOM")
+set xmldom = CreateObject("Msxml2.DOMDocument.3.0")
 
 xmldom.Async = False
 xmldom.Load(wscript.Arguments(0))
 
 if xmldom.parseError.errorCode <> 0 Then
-	stderr.Writeline("can not parse " & wscript.Arguments(0) & " for xml")
+	Wscript.stderr.Writeline("can not parse " & wscript.Arguments(0) & " for xml")
 Else
-	stdout.Writeline("parse " & wscript.Arguments(0) & " succ")
+	Wscript.stdout.Writeline("parse " & wscript.Arguments(0) & " succ")
 End If
 
-set root = xmldom.documentElement
 
-'XmlSetValue root,"/Project/ItemDefinitionGroup/ClCompile/AdditionalIncludeDirectories","","","Use"
-'XmlSetValue root,"//Project/ItemGroup/ClCompile","Include","","Use"
-XmlGetValueChilds root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader"
+set root = xmldom.documentElement
 XmlSetValueChilds root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader","Use"
-XmlGetValueChilds root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader"
-XmlFindValueNode root,"//Project/ItemGroup/ClCompile","Include",""
-'XmlSetValue root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader","PrecompiledHeader","","Use"
-'XmlSetValue root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader","PrecompiledHeader","","Use"
-'GetChild root,"PrecompiledHeader"
+XmlSetValueChilds root,"//Project/PropertyGroup/OutDir","$(SolutionDir)\$(PlatformTarget)\$(Configuration)"
+XmlSetValueChilds root,"//Project/PropertyGroup/IntDir","$(ProjectDir)\$(PlatformTarget)\$(Configuration)"
+SetPreCompileValue xmldom,"stb_image.c","NotUsing"
+SetPreCompileValue xmldom,"XUnzip.cpp","NotUsing"
+SetPreCompileValue xmldom,"StdAfx.cpp","Create"
+
+
+xmldom.save Wscript.Arguments(0)
 
