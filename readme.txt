@@ -1,4 +1,5 @@
-1. 把src目录下nsduilib工程生成的dll拷贝到example\nsis\plugin目录下即可使用该皮肤插件（nsduilib.dll）；
+1. 在src目录下，运行makedll.bat ，请确保已经安装了cmake程序，并且cmake.exe在可以查找的Path里面，运行程序,会生成一个build目录，在build目录下双击nsduilib.sln文件，选择生成Release
+   把build\nsduilib\Release\nsduilib.dll Copy到example目录下
 2. example目录下360SafeSetup.nsi是nsis示例脚本， 使用makensisw.exe即可编译（把脚本拖拽进去即可），会生成一个安装包（360SafeSetup.exe）；
 3. example\360Safe目录下的程序即为实例程序（360SafeSetup.exe安装包安装后的程序）；
 4. example\setup res是安装包（360SafeSetup.exe）的资源；
