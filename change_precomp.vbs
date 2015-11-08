@@ -12,7 +12,11 @@ sub includeFile (fSpec)
     set fileSys = nothing
 end sub
 
-includeFile "xmlfunc.vbs"
+dim fso ,scriptpath
+Set fso = CreateObject("Scripting.FileSystemObject") 
+ScriptPath = fso.GetParentFolderName(Wscript.ScriptFullName)
+includeFile scriptpath & "\xmlfunc.vbs"
+
 
 if wscript.Arguments.length < 1 Then
 	Wscript.stderr.WriteLine("build_chg.vbs vcxproj")
@@ -35,8 +39,6 @@ End If
 
 set root = xmldom.documentElement
 XmlSetValueChilds root,"//Project/ItemDefinitionGroup/ClCompile/PrecompiledHeader","Use"
-XmlSetValueChilds root,"//Project/PropertyGroup/OutDir","$(SolutionDir)\$(PlatformTarget)\$(Configuration)"
-XmlSetValueChilds root,"//Project/PropertyGroup/IntDir","$(ProjectDir)\$(PlatformTarget)\$(Configuration)"
 SetPreCompileValue xmldom,"stb_image.c","NotUsing"
 SetPreCompileValue xmldom,"XUnzip.cpp","NotUsing"
 SetPreCompileValue xmldom,"StdAfx.cpp","Create"
