@@ -4,10 +4,6 @@ project(nsduilib)
 include(cmake/functions.cmake)
 
 CheckMSVC()
-
-message(STATUS "CMAKE_C_COMPILER_ID " ${CMAKE_C_COMPILER_ID})
-message(STATUS "CMAKE_CXX_COMPILER_VERSION " ${CMAKE_CXX_COMPILER_VERSION})
-
 add_definitions(-DUNICODE -D_UNICODE)
 set(CMAKE_BUILD_TYPE Release) 
 
