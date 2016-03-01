@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="800,156" sizebox="4,4,4,4" caption="0,0,0,32" mininfo="600,100">
+    <Font name="标题栏字体" size="18" bold="false" italic="true" />
+    <VerticalLayout name="VerticalLayoutUI1" bkcolor="#FFF0F0F0" bkcolor2="#FFAAAAA0">
+        <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,32" height="32" bkcolor="#FFE6E6DC" bkcolor2="#FFAAAAA0">
+            <VerticalLayout name="VerticalLayoutUI2">
+                <Label name="LabelUI1" text="BTVM Dialog" float="true" pos="24,8,524,26" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" font="0" />
+                <Control name="ControlUI1" float="true" pos="2,5,26,29" bkimage="icon.png" />
+            </VerticalLayout>
+            <VerticalLayout name="VerticalLayoutUI3" pos="0,0,77,0" width="77">
+                <Button name="minbtn" tooltip="最小化" float="true" pos="22,5,45,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;SysBtn\MinNormal.bmp&apos;" />
+                <Button name="closebtn" tooltip="关闭" float="true" pos="44,5,72,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage=" file=&apos;SysBtn\CloseNormal.bmp&apos; " />
+            </VerticalLayout>
+        </HorizontalLayout>
+        <HorizontalLayout name="HorizontalLayoutUI3" pos="0,32,800,155" width="800" height="123" bkcolor="#FFFFFBE0">
+            <VerticalLayout name="VerticalLayoutUI4" pos="0,0,400,0" width="400">
+                <HorizontalLayout name="HorizontalLayoutUI2" pos="0,32,400,92" width="400" height="60">
+                    <Button name="hyperlink" text="{u}{a href=http://www.sina.com.cn}Hyperlinks{/a}{/u}" rhaa="http://www.sina.com.cn" showhtml="true" float="true" pos="110,19,270,49" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                </HorizontalLayout>
+                <HorizontalLayout name="HorizontalLayoutUI4" pos="0,0,0,63" height="63">
+                    <Label name="LabelTimeout" text="3" float="true" pos="100,16,220,46" bkcolor="#FFA6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                    <Button name="Buttonup" float="true" pos="220,16,245,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="SysBtn\up.png" />
+                    <Button name="Buttondown" float="true" pos="220,31,245,46" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="SysBtn\down.png" />
+                </HorizontalLayout>
+            </VerticalLayout>
+            <VerticalLayout name="VerticalLayoutUI5" pos="0,0,400,0" width="400">
+                <HorizontalLayout name="HorizontalLayoutUI5" pos="0,0,0,60" height="60">
+                    <Edit name="LabelUI3" text="Text2" float="true" pos="104,15,303,45" bkcolor="#FFA6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                </HorizontalLayout>
+                <HorizontalLayout name="HorizontalLayoutUI6" pos="0,0,0,63" height="63">
+                    <Button name="ButtonExit" text="Exit" float="true" pos="143,14,242,46" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;BtnStyle\Win7\button_nor.png&apos;" hotimage="file='BtnStyle\Win7\button_focus.png'" />
+                </HorizontalLayout>
+            </VerticalLayout>
+        </HorizontalLayout>
+    </VerticalLayout>
+</Window>
