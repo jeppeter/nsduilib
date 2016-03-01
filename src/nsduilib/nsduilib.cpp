@@ -662,3 +662,36 @@ NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *v
 	popstring( g_messageBoxYESBtnControlName,sizeof(g_messageBoxYESBtnControlName));
 	popstring( g_messageBoxNOBtnControlName,sizeof(g_messageBoxNOBtnControlName));
 }
+
+NSDUILIB_API void  VerifyCharaters(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	char characters[MAX_PATH];
+	int ret,i;
+
+	ret = popstringA(characters,MAX_PATH);
+	if (ret != 0){
+		/*we have error*/
+		pushint(-1);
+		return ;
+	}
+
+	for (i=0;i<MAX_PATH;i++){
+		if (characters[i] == 0x0){
+			break;
+		}
+
+		if ((characters[i] >= 'a' && characters[i] <= 'z') ||
+			(characters[i] >= 'A' && characters[i] <= 'Z') || 
+			(characters[i] >= '0' && characters[i] <= '9') ||
+			characters[i] == '_'){
+			continue;
+		}
+
+		/*this is error code*/
+		pushint(-2);
+		return;
+	}
+
+	pushint(0);
+	return;
+}

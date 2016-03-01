@@ -106,6 +106,11 @@ NSDUILIB_API void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *v
 */
 NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
 
+/* Verify the Character in buffer
+  * it must be in [a-zA-Z0-9_]  characters
+*/
+NSDUILIB_API void  VerifyCharaters(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
+
 #endif
 
 
