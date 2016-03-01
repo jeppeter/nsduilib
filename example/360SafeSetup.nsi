@@ -13,6 +13,8 @@
 !include "basehelp.nsh"
 !include "format.nsh"
 !include "nsduilib.nsh"
+!include "algo.nsh"
+!include "valid.nsh"
 
 !addplugindir "plugin"
 
@@ -36,6 +38,9 @@
 !define MUI_ICON                  ".\setup res\install.ico"    ; 安装icon
 !define MUI_UNICON                ".\setup res\uninstall.ico"  ; 卸载icon
 
+!define PORT_EDIT                 "portedit"
+!define SVC_EDIT                  "svcedit"
+
 !macro MutexCheck _mutexname _outvar _handle
 System::Call 'kernel32::CreateMutexA(i 0, i 0, t "${_mutexname}" ) i.r1 ?e'
 StrCpy ${_handle} $1
@@ -57,6 +62,8 @@ Var RunNow
 Var InstallState
 Var LocalPath
 Var 360Safetemp
+Var gPort
+Var gSvcName
 
 Name      "${PRODUCT_NAME}"              ; 提示对话框的标题
 OutFile   "${PRODUCT_NAME_EN}Setup.exe"  ; 输出的安装包名
@@ -496,7 +503,18 @@ Function OnNextBtnFunc
 FunctionEnd
 
 Function OnStartInstallBtnFunc
-   nsduilib::TBCIASendMessage $Dialog WM_TBCIASTARTINSTALL
+  
+  !insertmacro ValidPort
+  ${If} $R0 <> "0"
+         return
+  ${EndIf}
+
+  !insertmacro ValidService
+  ${If} $R0 <> "0"
+         return
+  ${EndIf}
+
+  nsduilib::TBCIASendMessage $Dialog WM_TBCIASTARTINSTALL
 FunctionEnd
 
 Function un.OnStartUninstallBtnFunc

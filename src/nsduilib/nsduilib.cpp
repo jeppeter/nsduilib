@@ -319,13 +319,19 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
 	popstring( dataType,sizeof(dataType));
 	
 	CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( ctlName ));
-	if( pControl == NULL )
+	if( pControl == NULL ){
+		pushstring(_T("error"));
 		return;
+	}
 
 	TCHAR temp[MAX_PATH] = {0};
 	_tcscpy( temp, pControl->GetText().GetData());
-	if( _tcsicmp( dataType, _T("text") ) == 0 )
+	if( _tcsicmp( dataType, _T("text") ) == 0 ){
 		pushstring( temp );
+	}else{
+		pushstring(_T("error"));
+	}
+	return;
 }
 
 void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)

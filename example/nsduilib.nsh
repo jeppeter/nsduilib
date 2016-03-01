@@ -248,5 +248,22 @@ ${__macro_exit_${__MACRO__}}:
 
 !macroend
 
+!macro nsGetCtrlText _ctlname _errmsg
+	nsduilib::GetControlData "${_ctlname}" "text"
+	pop $R0
+	${If} $R0 == "error"
+		MessageBox MB_OK "${_errmsg}"
+		StrCpy $R0 "error"
+	${EndIf}
+!macroend
+
+!macro nsValidCharacter _str _errmsg
+	nsduilib::VerifyCharaters "${_str}"
+	pop $R0
+	${If} $R0 <> "0"
+		MessageBox MB_OK "${_errmsg}"
+		StrCpy $R0 "-1"
+	${EndIf}
+!macroend
 
 !endif # __NS_DUILIB_NSH__
