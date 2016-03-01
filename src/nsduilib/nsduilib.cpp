@@ -624,8 +624,10 @@ NSDUILIB_API void ShowPage(HWND hwndParent, int string_size, char *variables, st
 	g_bErrorExit = FALSE;
 	while( ::GetMessage(&msg, NULL, 0, 0) && g_bMSGLoopFlag  && !g_bErrorExit) 
 	{
-		::TranslateMessage(&msg);
-		::DispatchMessage(&msg);
+		//if (!CPaintManagerUI::TranslateMessage(&msg)){
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		//}
 	}
 
 	if (g_bErrorExit)

@@ -308,7 +308,7 @@ namespace DuiLib {
 		bHandled = FALSE;
 		}
 		if( bHandled ) return lRes;
-		if( m_PaintManager.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
+		//if( m_PaintManager.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 		return __super::HandleMessage(uMsg, wParam, lParam);
 	}
 
@@ -466,7 +466,6 @@ namespace DuiLib {
 			::DeleteObject(hRgn1);
 			::DeleteObject(hRgn2);
 		}
-
 		bHandled = FALSE;
 		return 0;
 	}
