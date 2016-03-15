@@ -110,6 +110,11 @@ NSDUILIB_API void  InitTBCIAMessageBox(HWND hwndParent, int string_size, char *v
   * it must be in [a-zA-Z0-9_]  characters
 */
 NSDUILIB_API void  VerifyCharaters(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
+/******************************************
+*   to make the icon to handle
+******************************************/
+NSDUILIB_API void  SetIconImage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
+
 
 #endif
 

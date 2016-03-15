@@ -406,8 +406,6 @@ NSDUILIB_API void  TBCIASendMessage(HWND hwndParent, int string_size, char *vari
 	{
 		LPCTSTR lpTitle = (LPCTSTR)wParam;
 		LPCTSTR lpText = (LPCTSTR)lParam;
-		DEBUG_BUFFER_FMT(lpTitle,_tcslen(lpTitle) + sizeof(TCHAR),"lpTitle :");
-		DEBUG_BUFFER_FMT(lpText,_tcslen(lpText) + sizeof(TCHAR),"lpText :");
 		if( IDYES == MessageBox( hwnd, lpText, lpTitle, MB_YESNO)/*TBCIAMessageBox( hwnd, lpTitle, lpText )*/)
 		{
 			pushint( 0 );
@@ -685,5 +683,27 @@ NSDUILIB_API void  VerifyCharaters(HWND hwndParent, int string_size, char *varia
 	}
 
 	pushint(0);
+	return;
+}
+
+void SetIconImage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	TCHAR iconname[MAX_PATH];
+	int ret;
+
+	if (g_pFrame == NULL){
+		goto fail;
+	}
+	popstring(iconname,sizeof(iconname));
+
+	ret = g_pFrame->SetIconRes(iconname);
+	if (ret < 0){
+		goto fail;
+	}
+
+	pushint(0);
+	return ;
+fail:
+	pushint(-1);
 	return;
 }

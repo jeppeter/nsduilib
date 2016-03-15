@@ -24,7 +24,11 @@ public:
             delete this->m_pnamevecs;
             this->m_pnamevecs = NULL;
         }
-
+        this->m_restype = UILIB_FILE;
+        if (this->m_pIconInfo){
+            CRenderEngine::FreeImage(this->m_pIconInfo,TRUE);
+            this->m_pIconInfo=  NULL;
+        }
     }
     virtual CDuiString GetSkinFolder();
     virtual CDuiString GetSkinFile();
@@ -70,7 +74,7 @@ public:
 
     CPaintManagerUI& GetPaintManager();
     void SaveToControlCallbackMap( CDuiString ctlName, int callback );
-    
+    int SetIconRes(TCHAR* iconname);
 
 private:
     TCHAR                               m_skinXMLPath[MAX_PATH];
@@ -79,6 +83,7 @@ private:
     std::map<CDuiString, int> m_controlCallbackMap;
     std::vector<CDuiString> *m_pnamevecs;
     std::vector<int> *m_pcodevecs;
+    TImageInfo* m_pIconInfo;
 };
 
 //////////////////////////////////////////////////////////////////////////

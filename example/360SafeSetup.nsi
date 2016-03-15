@@ -149,6 +149,12 @@ Function 360Safe
    nsduilib::InitTBCIAMessageBox "MessageBox.xml" "TitleLab" "TextLab" "CloseBtn" "YESBtn" "NOBtn"
    Pop $MessageBoxHandle   
    !insertmacro DEBUG_INFO ""
+   !insertmacro SetIconImage "install.png"
+   ${If} $R0 <> "0"
+      MessageBox MB_OK "can not init install.png"
+      !insertmacro DEBUG_INFO "can not init install.png"
+       Call AbortFunction
+   ${EndIf}
 
    ;全局按钮绑定函数
    ;最小化按钮绑定函数
@@ -299,6 +305,7 @@ Function .onInit
   File ".\setup res\*.png"
   File ".\setup res\*.txt"
   File ".\setup res\*.xml"
+  File ".\setup res\*.ico"
 
   !insertmacro DEBUG_INFO ""
   StrCpy $installPath "$PROGRAMFILES\360\${PRODUCT_NAME_EN}"

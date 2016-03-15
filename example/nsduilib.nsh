@@ -266,4 +266,9 @@ ${__macro_exit_${__MACRO__}}:
 	${EndIf}
 !macroend
 
+!macro SetIconImage _imgname
+	nsduilib::SetIconImage "${_imgname}"
+	pop $R0
+!macroend
+
 !endif # __NS_DUILIB_NSH__
