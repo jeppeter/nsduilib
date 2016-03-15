@@ -149,7 +149,7 @@ Function 360Safe
    nsduilib::InitTBCIAMessageBox "MessageBox.xml" "TitleLab" "TextLab" "CloseBtn" "YESBtn" "NOBtn"
    Pop $MessageBoxHandle   
    !insertmacro DEBUG_INFO ""
-   !insertmacro SetIconImage "install.png"
+   !insertmacro nsSetIconImage "install.png"
    ${If} $R0 <> "0"
       MessageBox MB_OK "can not init install.png"
       !insertmacro DEBUG_INFO "can not init install.png"
