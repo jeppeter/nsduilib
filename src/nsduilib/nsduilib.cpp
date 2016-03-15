@@ -37,11 +37,9 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
 
 NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
-	DEBUG_INFO("\n");
 	g_pluginParms = extra;
 	EXDLL_INIT();
 	extra->RegisterPluginCallback(g_hInstance, PluginCallback);
-	DEBUG_INFO("\n");
 	USES_CONVERSION;
 	{
 		TCHAR skinPath[MAX_PATH];
@@ -77,7 +75,6 @@ NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *va
             if (pDir == NULL)
             {   
                 g_pFrame->SetZipFile(skinPath);
-                DEBUG_INFO("set zip file %s\n",T2A(skinPath));
             }
             else
             {
@@ -85,7 +82,6 @@ NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *va
                 pDir ++;
                 CPaintManagerUI::SetResourcePath(skinPath);
                 g_pFrame->SetZipFile(pDir);
-                DEBUG_INFO("set resource path %s zip %s\n",T2A(skinPath),T2A(pDir));
             }
         }
         else
@@ -98,9 +94,7 @@ NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *va
 		ShowWindow( g_pFrame->GetHWND(), FALSE );
 
 		pushint( int(g_pFrame->GetHWND()));
-		DEBUG_INFO("\n");
 	}
-	DEBUG_INFO("\n");
 }
 
 NSDUILIB_API void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
@@ -177,28 +171,25 @@ NSDUILIB_API void ShowLicense(HWND hwndParent, int string_size, char *variables,
 	ZeroMemory(ptchlicense,sizeof(TCHAR)* (nSize + 1));
 	pptr = pLicense;
 	leftsize = nSize;
-	DEBUG_INFO("openfile 0x%p size %d\n",infile,nSize);
 	while (leftsize > 0)
 	{
 		ret = fread_s(pptr, leftsize, sizeof(char), leftsize, infile);
 		if (ret < 0)
 		{
-			DEBUG_INFO("ret = %d\n",ret);
+			ERROR_INFO("ret = %d",ret);
 			goto fail;
 		}
-		DEBUG_INFO("ret = %d\n",ret);
 		pptr += ret* sizeof(char);
 		leftsize -= (ret * sizeof(char));
 	}
 	/*now we change the text*/
 	//mbstowcs(ptchlicense,pLicense,nSize+1);
 #ifdef _UNICODE
-	DEBUG_INFO("\n");
 	pLicense[nSize] = 0x0;
 	bret = MultiByteToWideChar(CP_ACP,0,pLicense,nSize,ptchlicense,(nSize + 1));
 	if (!bret)
 	{
-		DEBUG_INFO("change license error %d\n",GetLastError());
+		ERROR_INFO("change license error %d\n",GetLastError());
 		goto fail;
 	}
 #else
@@ -247,9 +238,7 @@ NSDUILIB_API void  OnControlBindNSISScript(HWND hwndParent, int string_size, cha
 
 	popstring(controlName,sizeof(controlName));
 	int callbackID = popint();
-	DEBUG_INFO("\n");
 	g_pFrame->SaveToControlCallbackMap( controlName, callbackID );
-	DEBUG_INFO("\n");
 }
 
 NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
@@ -401,7 +390,6 @@ NSDUILIB_API void  TBCIASendMessage(HWND hwndParent, int string_size, char *vari
 	ZeroMemory(wParam, MAX_PATH*sizeof(TCHAR));
 	ZeroMemory(lParam, MAX_PATH*sizeof(TCHAR));
 
-	DEBUG_INFO("to send message stringsize %d MAX_PATH %d\n",g_stringsize,MAX_PATH);
 	popstring( msgID,sizeof(msgID) );
 	popstring( wParam,sizeof(wParam) );
 	popstring( lParam ,sizeof(lParam));
@@ -452,7 +440,6 @@ NSDUILIB_API void  TBCIASendMessage(HWND hwndParent, int string_size, char *vari
 		COptionUI* pOption = static_cast<COptionUI*>(g_pFrame->GetPaintManager().FindControl( wParam ));
 		if( pOption == NULL )
 			return;
-		DEBUG_INFO("selected %s\n",pOption->IsSelected() ? "yes" : "no");
 		pushint(  pOption->IsSelected() );
 	}
 	else if (_tcsicmp( msgID, _T("WM_TBCIASETSTATE")) == 0)
@@ -468,7 +455,6 @@ NSDUILIB_API void  TBCIASendMessage(HWND hwndParent, int string_size, char *vari
 		{
 			pOption->Selected(false);
 		}
-		DEBUG_INFO("selected %s\n",pOption->IsSelected() ? "yes" : "no");
 		pOption->PaintStatusImage(g_pFrame->GetPaintManager().GetPaintDC());
 		pushint(  pOption->IsSelected() );
 	}
@@ -556,7 +542,6 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 {
 	BOOL res = 0;
 	std::map<HWND, WNDPROC>::iterator iter = g_windowInfoMap.find( hwnd );
-	//DEBUG_INFO("hwnd 0x%x message 0x%x wparam 0x%x lparam 0x%x\n",hwnd,message,wParam,lParam);
 	if( iter != g_windowInfoMap.end() )
 	{
 
@@ -653,7 +638,6 @@ NSDUILIB_API void  ExitTBCIASkinEngine(HWND hwndParent, int string_size, char *v
 	EXDLL_INIT();
 	popstring(hwnd,sizeof(hwnd));
 	g_bErrorExit = TRUE;
-	DEBUG_INFO("exit skin engine\n");
 	return ;
 }
 

@@ -54,7 +54,6 @@ HINSTANCE g_hInstance;
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	g_hInstance = (HINSTANCE) hInst;
-	DEBUG_INFO("\n");
  #ifdef _DEBUG
  	if (ul_reason_for_call == DLL_PROCESS_ATTACH)
  		MessageBox( 0, 0, 0, 0 );

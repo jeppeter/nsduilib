@@ -64,19 +64,15 @@ namespace DuiLib {
 		}
 		if( _tcsicmp( msg.sType, _T("click") ) == 0 ){
 			if( findidx >= 0){
-				DEBUG_INFO("name(%s) clicked\n",T2A(msg.pSender->GetName()));
 				if (_tcsicmp(msg.pSender->GetClass(),_T("OptionUI"))==0)
 				{
 					COptionUI* pOption = static_cast<COptionUI*>(msg.pSender);
-					DEBUG_INFO("selected state %d selimage %s normimg %s\n",pOption->IsSelected(),T2A(pOption->GetSelectedImage()),
-						T2A(pOption->GetNormalImage()));
 				}
 				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
 			}
 		}
 		else if( _tcsicmp( msg.sType, _T("textchanged") ) == 0 ){
 			if( findidx >= 0){
-				DEBUG_INFO("name(%s) textchanged\n",T2A(msg.pSender->GetName()));
 				g_pluginParms->ExecuteCodeSegment( this->m_pcodevecs->at(findidx)- 1, 0 );
 			}
 		}

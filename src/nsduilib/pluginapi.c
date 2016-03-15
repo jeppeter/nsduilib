@@ -17,7 +17,6 @@ int NSISCALL popstring_debug(TCHAR* str,int maxsize)
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th = (*g_stacktop);
-	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
 	DEBUG_BUFFER(th->text,strlen(th->text));
 	//if (str) mbstowcs(str,th->text,strlen(th->text));
 	if (str) MultiByteToWideChar(CP_ACP,0,th->text,-1,str,maxsize / sizeof(TCHAR));
@@ -32,7 +31,6 @@ int NSISCALL popstring(TCHAR* str,int maxsize)
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th = (*g_stacktop);
-	DEBUG_INFO("popstring (%s) (%d)\n",th->text,strlen(th->text));
 	//if (str) mbstowcs(str,th->text,strlen(th->text));
 	if (str) MultiByteToWideChar(CP_ACP, 0, th->text,-1, str,maxsize/sizeof(TCHAR));
 	*g_stacktop = th->next;
@@ -57,7 +55,6 @@ int NSISCALL popstringA(char* str,int maxsize)
 	stack_t *th;
 	if (!g_stacktop || !*g_stacktop) return 1;
 	th=(*g_stacktop);
-	DEBUG_INFO("popstringA %s (%d)\n",th->text,strlen(th->text));
 	if (str) lstrcpyA(str,th->text);
 	*g_stacktop = th->next;
 	GlobalFree((HGLOBAL)th);
@@ -69,7 +66,6 @@ int NSISCALL popstringn(char *str, int maxlen)
   stack_t *th;
   if (!g_stacktop || !*g_stacktop) return 1;
   th=(*g_stacktop);
-  DEBUG_INFO("popstringn %s (%d)\n",th->text,strlen(th->text));
   if (str) strncpy(str,th->text,maxlen?maxlen:g_stringsize);
   *g_stacktop = th->next;
   GlobalFree((HGLOBAL)th);
@@ -83,7 +79,6 @@ void NSISCALL pushstring(TCHAR *str)
 	if (!g_stacktop) return;
 	th = (stack_t*)GlobalAlloc(GPTR, sizeof(stack_t) + g_stringsize);	
 	WideCharToMultiByte(CP_ACP,0,str,_tcslen(str),th->text,g_stringsize,NULL,NULL);
-	DEBUG_INFO("pushstring %s (%d)\n",th->text,strlen(th->text));
 	th->next = *g_stacktop;
 	*g_stacktop = th;
 }
