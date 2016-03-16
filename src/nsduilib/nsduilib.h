@@ -114,6 +114,10 @@ NSDUILIB_API void  VerifyCharaters(HWND hwndParent, int string_size, char *varia
 *   to make the icon to handle
 ******************************************/
 NSDUILIB_API void  SetIconImage(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
+/******************************************
+verify number
+******************************************/
+NSDUILIB_API void  VerifyNumbers(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
 
 
 #endif
