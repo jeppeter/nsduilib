@@ -643,7 +643,7 @@ fail:
 void  VerifyNumbers(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
     char numchar[MAX_PATH];
-    int ret, i, ishex;
+    int i, ishex;
     popstringA(numchar, sizeof(numchar));
     ishex = popint();
     for (i = 0; i < MAX_PATH; i++) {

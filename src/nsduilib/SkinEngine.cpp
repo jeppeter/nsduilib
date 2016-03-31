@@ -30,6 +30,7 @@ CSkinEngine::CSkinEngine()
     this->m_pcodevecs = new std::vector<int>();
     this->m_pnamevecs = new std::vector<CDuiString>();
     this->m_restype = UILIB_FILE;
+    this->m_pIconInfo = NULL;
 }
 
 int CSkinEngine::SetIconRes(TCHAR* iconname)
