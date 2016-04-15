@@ -673,3 +673,12 @@ fail:
     pushint(-1);
     return;
 }
+
+void FreeSkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
+{
+    if (g_pFrame){
+        delete g_pFrame;
+        g_pFrame = NULL;
+    }
+    return;
+}
