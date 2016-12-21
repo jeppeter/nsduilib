@@ -262,6 +262,10 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
             pControl->SetVisible( true );
         else if ( _tcsicmp( controlData, _T("false")) == 0 )
             pControl->SetVisible( false );
+    } else if ( _tcsicmp(dataType,_T("insertsel")) == 0 ) {
+        /*in insertsel ,it will be controlData for insert text*/
+    } else if ( _tcsicmp(dataType,_T("setsel")) == 0 ) {
+        /*in setsel ,it will be controlData for idx to selected*/
     }
 }
 
@@ -284,9 +288,13 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
     }
 
     TCHAR temp[MAX_PATH] = {0};
-    _tcscpy( temp, pControl->GetText().GetData());
     if ( _tcsicmp( dataType, _T("text") ) == 0 ) {
+        _tcscpy( temp, pControl->GetText().GetData());
         pushstring( temp );
+    }  else if (_tcsicmp(dataType,_T("getsel")) == 0) {
+        /*to get selected idx*/
+    }  else if (_tcsicmp(dataType,_T("getseltext"))  == 0) {
+        /*to get the selected text*/
     } else {
         pushstring(_T("error"));
     }
