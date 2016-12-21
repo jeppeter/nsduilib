@@ -240,9 +240,15 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
     popstring( controlData, sizeof(controlData));
     popstring( dataType, sizeof(dataType));
 
-    CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl(controlName));
-    if ( pControl == NULL )
+    if (g_pFrame == NULL) {
+        /*nothing to handle*/
         return;
+    }
+
+    CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl(controlName));
+    if ( pControl == NULL ){
+        return;
+    }
 
     if ( _tcsicmp( dataType, _T("text") ) == 0 ) {
         if ( _tcsicmp( controlData, _T("error")) == 0 || _tcsicmp( controlData, _T("")) == 0 )
@@ -310,6 +316,11 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
     ZeroMemory(dataType, MAX_PATH * sizeof(TCHAR));
     popstring( ctlName , sizeof(ctlName));
     popstring( dataType, sizeof(dataType));
+
+    if (g_pFrame == NULL) {
+        pushstring(_T("error"));
+        return;
+    }
 
     CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( ctlName ));
     if ( pControl == NULL ) {
