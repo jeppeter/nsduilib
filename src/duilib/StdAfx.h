@@ -55,6 +55,7 @@
 #include "UIlib.h"
 
 #include <olectl.h>
+#include <output_debug.h>
 
 #define lengthof(x) (sizeof(x)/sizeof(*x))
 #define MAX max

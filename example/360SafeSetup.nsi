@@ -178,7 +178,6 @@ Function 360Safe
    nsduilib::SetControlData "ComboInterface" "NetInterface1" "insertcombo"
 	 nsduilib::SetControlData "ComboInterface" "NetInterface2" "insertcombo"
 	 nsduilib::SetControlData "ComboInterface" "NetInterface3" "insertcombo"
-	 nsduilib::SetControlData "ComboInterface" "0" "setcombo"
 
    ${If} $InstallState == "Cover"
 	ReadRegStr $LocalPath HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "InstallLocation"
@@ -511,6 +510,11 @@ FunctionEnd
 
 Function OnNextBtnFunc
    nsduilib::TBCIASendMessage $Dialog WM_TBCIANEXT
+  nsduilib::GetControlData "ComboInterface" "getsel"
+  pop $R0
+    ${If} $R0 == "-1"
+      nsduilib::SetControlData "ComboInterface" "0" "setcombo"
+    ${EndIf}
 FunctionEnd
 
 Function OnStartInstallBtnFunc
@@ -524,6 +528,10 @@ Function OnStartInstallBtnFunc
   ${If} $R0 <> "0"
          return
   ${EndIf}
+
+  nsduilib::GetControlData "ComboInterface" "getseltext"
+  pop $R0
+  !insertmacro DEBUG_INFO "get selected [$R0]"
 
   nsduilib::TBCIASendMessage $Dialog WM_TBCIASTARTINSTALL
 FunctionEnd

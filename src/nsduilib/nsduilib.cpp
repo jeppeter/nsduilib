@@ -240,7 +240,7 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
     popstring( controlData, sizeof(controlData));
     popstring( dataType, sizeof(dataType));
 
-    CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
+    CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl(controlName));
     if ( pControl == NULL )
         return;
 
@@ -269,30 +269,28 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
     } else if ( _tcsicmp(dataType, _T("insertcombo")) == 0 ) {
         /*in insertsel ,it will be controlData for insert text*/
         pcombo = static_cast<CComboUI*>(pControl);
-        plistui = new CListLabelElementUI();
-        plistui->SetText(controlData);
-        DEBUG_INFO("insert %s\n",controlData);
-        pcombo->Add(plistui);
+        if (pcombo != NULL) {
+            plistui = new CListLabelElementUI();
+            plistui->SetText(controlData);
+            pcombo->Add(plistui);
+            DEBUG_INFO("pcombo visible(%s)\n",pcombo->IsVisible() ? "True" : "False");
+        }
     } else if ( _tcsicmp(dataType, _T("setcombo")) == 0 ) {
         /*in setsel ,it will be controlData for idx to selected*/
         pcombo = static_cast<CComboUI*>(pControl);
-        pushstring(controlData);
-        controlint = popint();
-        DEBUG_INFO("set %d\n",controlint);
-        /*we should selected*/
-        pcombo->SelectItem(controlint, false);
+        bret = false;
+        if (pcombo != NULL) {
+            pushstring(controlData);
+            controlint = popint();
+            /*we should selected*/
+            bret = pcombo->SelectItem(controlint, true);
+            DEBUG_INFO("set %d (%s)\n", controlint,bret ? "True":"False");
+        }
     } else if (_tcsicmp(dataType, _T("clearcombo")) == 0) {
         pcombo = static_cast<CComboUI*>(pControl);
         /*now first to make sure clear*/
-        controlint = 0;
-        while (1) {
-            /*clear all the combo text*/
-            bret = pcombo->RemoveAt(0);
-            if (!bret) {
-                break;
-            }
-            DEBUG_INFO("remove[%d]\n",controlint);
-            controlint ++;
+        if (pcombo != NULL) {
+            pcombo->RemoveAll();
         }
 
     }
@@ -302,8 +300,8 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
 {
     TCHAR ctlName[MAX_PATH];
     TCHAR dataType[MAX_PATH];
-    CComboUI* pcombo=NULL;
-    CListLabelElementUI* plistui=NULL;
+    CComboUI* pcombo = NULL;
+    CListLabelElementUI* plistui = NULL;
     int idx;
 
     EXDLL_INIT();
@@ -332,8 +330,12 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
         /*to get the selected text*/
         pcombo = static_cast<CComboUI*>(pControl);
         idx = pcombo->GetCurSel();
-        plistui = static_cast<CListLabelElementUI*>(pcombo->GetItemAt(idx));
-        pushstring((TCHAR*)(plistui->GetText().GetData()));
+        if (idx >= 0 ) {
+            plistui = static_cast<CListLabelElementUI*>(pcombo->GetItemAt(idx));
+            pushstring((TCHAR*)(plistui->GetText().GetData()));
+        } else {
+            pushstring(_T("error"));
+        }
     } else {
         pushstring(_T("error"));
     }
