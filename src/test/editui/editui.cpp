@@ -15,3 +15,8 @@ LRESULT EditUIWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	return __super::HandleMessage(uMsg,wParam,lParam);
 }
+
+CPaintManagerUI* EditUIWnd::getUIManager()
+{
+	return &(this->m_PaintManager);
+}

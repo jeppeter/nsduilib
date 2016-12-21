@@ -18,7 +18,7 @@
                     <Button name="hyperlink" text="{u}{a href=http://www.sina.com.cn}Hyperlinks{/a}{/u}" rhaa="http://www.sina.com.cn" showhtml="true" float="true" pos="110,19,270,49" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                 </HorizontalLayout>
                 <HorizontalLayout name="HorizontalLayoutUI4" pos="0,0,0,63" height="63">
-                    <Combo name="ComboDemo1" float="true" pos="100,16,220,46" width="139" height="30" normalimage="file='SysBtn/ComboBox/Combo_nor.bmp'" hotimage="file='SysBtn/ComboBox/Combo_over.bmp'" pushedimage="file='SysBtn/ComboBox/Combo_over.bmp'" >
+                    <Combo name="ComboInterface" float="true" pos="100,16,220,46" width="139" height="30" normalimage="file='SysBtn/ComboBox/Combo_nor.bmp'" hotimage="file='SysBtn/ComboBox/Combo_over.bmp'" pushedimage="file='SysBtn/ComboBox/Combo_over.bmp'" >
                         <!--<ListLabelElement text="张三" selected="true" />
                         <ListLabelElement text="李四" />-->
                     </Combo>

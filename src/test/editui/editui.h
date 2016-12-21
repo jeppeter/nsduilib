@@ -9,6 +9,7 @@ public:
     explicit EditUIWnd(LPCTSTR pszXMLPath);
     virtual ~EditUIWnd();
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+    CPaintManagerUI* getUIManager();
 private:
 };
 

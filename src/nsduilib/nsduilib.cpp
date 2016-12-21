@@ -225,6 +225,10 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
     TCHAR controlName[MAX_PATH];
     TCHAR controlData[MAX_PATH];
     TCHAR dataType[MAX_PATH];
+    CComboUI* pcombo = NULL;
+    bool bret;
+    int controlint;
+    CListLabelElementUI* plistui = NULL;
 
     EXDLL_INIT();
 
@@ -262,10 +266,29 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
             pControl->SetVisible( true );
         else if ( _tcsicmp( controlData, _T("false")) == 0 )
             pControl->SetVisible( false );
-    } else if ( _tcsicmp(dataType,_T("insertsel")) == 0 ) {
+    } else if ( _tcsicmp(dataType, _T("insertsel")) == 0 ) {
         /*in insertsel ,it will be controlData for insert text*/
-    } else if ( _tcsicmp(dataType,_T("setsel")) == 0 ) {
+        pcombo = static_cast<CComboUI*>(pControl);
+        plistui = new CListLabelElementUI();
+        plistui->SetText(controlData);
+        pcombo->Add(plistui);
+    } else if ( _tcsicmp(dataType, _T("setsel")) == 0 ) {
         /*in setsel ,it will be controlData for idx to selected*/
+        pcombo = static_cast<CComboUI*>(pControl);
+        pushstring(controlData);
+        controlint = popint();
+        /*we should selected*/
+        pcombo->SelectItem(controlint, false);
+    } else if (_tcsicmp(dataType, _T("clearcombo")) == 0) {
+        pcombo = static_cast<CComboUI*>(pControl);
+        /*now first to make sure clear*/
+        while (1) {
+            /*clear all the combo text*/
+            bret = pcombo->RemoveAt(0);
+            if (!bret) {
+                break;
+            }
+        }
     }
 }
 
@@ -273,6 +296,9 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
 {
     TCHAR ctlName[MAX_PATH];
     TCHAR dataType[MAX_PATH];
+    CComboUI* pcombo=NULL;
+    CListLabelElementUI* plistui=NULL;
+    int idx;
 
     EXDLL_INIT();
 
@@ -291,10 +317,17 @@ NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variab
     if ( _tcsicmp( dataType, _T("text") ) == 0 ) {
         _tcscpy( temp, pControl->GetText().GetData());
         pushstring( temp );
-    }  else if (_tcsicmp(dataType,_T("getsel")) == 0) {
+    }  else if (_tcsicmp(dataType, _T("getsel")) == 0) {
         /*to get selected idx*/
-    }  else if (_tcsicmp(dataType,_T("getseltext"))  == 0) {
+        pcombo = static_cast<CComboUI*>(pControl);
+        idx = pcombo->GetCurSel();
+        pushint(idx);
+    }  else if (_tcsicmp(dataType, _T("getseltext"))  == 0) {
         /*to get the selected text*/
+        pcombo = static_cast<CComboUI*>(pControl);
+        idx = pcombo->GetCurSel();
+        plistui = static_cast<CListLabelElementUI*>(pcombo->GetItemAt(idx));
+        pushstring((TCHAR*)(plistui->GetText().GetData()));
     } else {
         pushstring(_T("error"));
     }
@@ -684,7 +717,7 @@ fail:
 
 void FreeSkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
-    if (g_pFrame){
+    if (g_pFrame) {
         delete g_pFrame;
         g_pFrame = NULL;
     }
