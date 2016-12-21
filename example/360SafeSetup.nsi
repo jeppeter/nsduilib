@@ -174,7 +174,11 @@ Function 360Safe
    ;安装路径编辑框设定数据
    !insertmacro BindControlFunction "Wizard_InstallPathEdit4Page2" "OnTextChangeFunc"	
    nsduilib::SetControlData "Wizard_InstallPathEdit4Page2"  $installPath "text"
-
+   nsduilib::SetControlData "ComboInterface" "dummy" "clearcombo"
+   nsduilib::SetControlData "ComboInterface" "NetInterface1" "insertcombo"
+	 nsduilib::SetControlData "ComboInterface" "NetInterface2" "insertcombo"
+	 nsduilib::SetControlData "ComboInterface" "NetInterface3" "insertcombo"
+	 nsduilib::SetControlData "ComboInterface" "0" "setcombo"
 
    ${If} $InstallState == "Cover"
 	ReadRegStr $LocalPath HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME_EN}" "InstallLocation"

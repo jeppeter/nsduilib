@@ -266,29 +266,35 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
             pControl->SetVisible( true );
         else if ( _tcsicmp( controlData, _T("false")) == 0 )
             pControl->SetVisible( false );
-    } else if ( _tcsicmp(dataType, _T("insertsel")) == 0 ) {
+    } else if ( _tcsicmp(dataType, _T("insertcombo")) == 0 ) {
         /*in insertsel ,it will be controlData for insert text*/
         pcombo = static_cast<CComboUI*>(pControl);
         plistui = new CListLabelElementUI();
         plistui->SetText(controlData);
+        DEBUG_INFO("insert %s\n",controlData);
         pcombo->Add(plistui);
-    } else if ( _tcsicmp(dataType, _T("setsel")) == 0 ) {
+    } else if ( _tcsicmp(dataType, _T("setcombo")) == 0 ) {
         /*in setsel ,it will be controlData for idx to selected*/
         pcombo = static_cast<CComboUI*>(pControl);
         pushstring(controlData);
         controlint = popint();
+        DEBUG_INFO("set %d\n",controlint);
         /*we should selected*/
         pcombo->SelectItem(controlint, false);
     } else if (_tcsicmp(dataType, _T("clearcombo")) == 0) {
         pcombo = static_cast<CComboUI*>(pControl);
         /*now first to make sure clear*/
+        controlint = 0;
         while (1) {
             /*clear all the combo text*/
             bret = pcombo->RemoveAt(0);
             if (!bret) {
                 break;
             }
+            DEBUG_INFO("remove[%d]\n",controlint);
+            controlint ++;
         }
+
     }
 }
 
