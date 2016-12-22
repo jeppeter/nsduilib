@@ -6,6 +6,7 @@
 #include <atlconv.h>
 #include <string>
 #include "output_debug.h"
+#include "uniansi.h"
 #include <Shlwapi.h>
 using namespace DuiLib;
 
@@ -225,6 +226,9 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
     TCHAR controlName[MAX_PATH];
     TCHAR controlData[MAX_PATH];
     TCHAR dataType[MAX_PATH];
+    char* pansi=NULL;
+    int ansisize=0;
+    int ret;
     CComboUI* pcombo = NULL;
     bool bret;
     int controlint;
@@ -242,12 +246,12 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
 
     if (g_pFrame == NULL) {
         /*nothing to handle*/
-        return;
+        goto out;
     }
 
     CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl(controlName));
     if ( pControl == NULL ){
-        return;
+        goto out;
     }
 
     if ( _tcsicmp( dataType, _T("text") ) == 0 ) {
@@ -279,7 +283,10 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
             plistui = new CListLabelElementUI();
             plistui->SetText(controlData);
             pcombo->Add(plistui);
-            DEBUG_INFO("pcombo visible(%s)\n",pcombo->IsVisible() ? "True" : "False");
+            ret = TcharToAnsi(controlData,&pansi,&ansisize);
+            if (ret >= 0) {
+                DEBUG_INFO("pcombo visible(%s) [%s]\n",pcombo->IsVisible() ? "True" : "False",pansi);
+            }
         }
     } else if ( _tcsicmp(dataType, _T("setcombo")) == 0 ) {
         /*in setsel ,it will be controlData for idx to selected*/
@@ -298,8 +305,11 @@ NSDUILIB_API void  SetControlData(HWND hwndParent, int string_size, char *variab
         if (pcombo != NULL) {
             pcombo->RemoveAll();
         }
-
     }
+
+out:
+    TcharToAnsi(NULL,&pansi,&ansisize);
+    return;    
 }
 
 NSDUILIB_API void  GetControlData(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
