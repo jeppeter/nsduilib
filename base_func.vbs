@@ -1,4 +1,4 @@
-
+Option Explicit
 
 Function RunCommand(cmd)
 	dim objsh,res
@@ -61,6 +61,35 @@ Function GetEnv(varname)
 	end if
 End Function
 
+Function GetTempName(pattern)
+	dim fso,fname,tempdir,shell,extname,objRegEx,tempname
+	set fso = CreateObject("Scripting.FileSystemObject")
+	set shell = CreateObject("WScript.Shell")
+	Set objRegEx =  CreateObject("VBScript.RegExp")
+	objRegEx.Global = True
+	objRegEx.IgnoreCase = True
+	objRegEx.Pattern = "XXXXXX"
+	tempdir = shell.ExpandEnvironmentStrings("%TEMP%")
+	fname = fso.GetTempName()
+	extname = fso.GetBaseName(fname)
+	'WScript.Stderr.Writeline("extname of " & fname & "=" & extname)
+	tempname = objRegEx.Replace(pattern,extname)
+	If tempname = pattern Then
+		tempname = fname
+	End If
+	GetTempName=tempdir & "\" & tempname
+End Function
+
+Function WriteTempFile(str,pattern)
+	dim tempfile
+	dim fso,fh
+	tempfile=GetTempName(pattern)
+	set fso = CreateObject("Scripting.FileSystemObject")
+	set fh = fso.CreateTextFile(tempfile,True)
+	fh.Write(str)
+	WriteTempFile=tempfile
+End Function
+
 Function SetEnv(key,value)
 	dim objShell,colprocenvars
 	Set objShell = WScript.CreateObject("WScript.Shell")
@@ -86,6 +115,15 @@ Function FileExists(pathf)
 		FileExists=0
 	End If	
 End Function
+
+Function RemoveFileSafe(fname)
+	dim fso
+	set fso = CreateObject("Scripting.FileSystemObject")
+	If FileExists(fname) Then
+		fso.DeleteFile fname
+	End If
+End Function
+
 
 Function FolderExists(pathd)
 	dim fso
@@ -156,7 +194,23 @@ Function GetRunOut(exefile,commands,ByRef filterfunc,ByRef filterctx)
     GetRunOut=retline
 End Function
 
-Function ReadDir(dir)
+Function StrHasChar(instr,ch)
+	dim xlen
+	dim i
+	dim curch
+	xlen=Len(instr)
+	For i=0 to xlen-1 
+		curch=Mid(instr,i+1,1)
+		if curch = ch Then
+			StrHasChar=True
+			exit Function
+		End If
+	Next
+	StrHasChar=False	
+End Function
+
+
+Function ReadDirAll(dir)
 	dim fso
 	dim folder
 	dim lists
@@ -176,15 +230,145 @@ Function ReadDir(dir)
 		retfiles = retfiles & curfile
 		i = i + 1
 	Next
+	
 
 	For Each curfile in dirs
 		If i <> 0 Then
 		       retfiles = retfiles & ";"
 		End If
 		retfiles = retfiles & curfile
-		i = i + 1		
+		i = i + 1
 	Next
+
+
+	ReadDirAll=retfiles
+End Function
+
+Function ReadDir(dir)
+	dim fso
+	dim folder
+	dim lists
+	dim files,retfiles,dirs
+	dim i
+	dim curfile
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set folder = fso.GetFolder(dir)
+	set dirs = folder.SubFolders
+    i = 0
+    retfiles=""	
+
+	For Each curfile in dirs
+		If i <> 0 Then
+		       retfiles = retfiles & ";"
+		End If
+		retfiles = retfiles & curfile
+		i = i + 1
+	Next
+
 
 	ReadDir=retfiles
 End Function
+
+
+Class ArrayObject
+	Private m_array()
+	Public Sub Push(item)
+		dim size
+		dim newsize
+		size = UBound(m_array)
+		newsize = size + 1
+		ReDim Preserve m_array(newsize)
+		m_array(size)=item
+	End Sub
+
+	Public Property Get GetItem(idx)
+		dim size
+		size = UBound(m_array)
+		If idx >= size Then
+			GetItem=null
+		Else
+			GetItem=m_array(idx)
+		End If
+	End Property
+
+	Public Property Get Size()
+		Size = UBound(m_array)
+	End Property
+
+	Private Sub Class_Initialize()
+		ReDim m_array(0)
+	End Sub
+
+	Private Sub Class_Terminate()
+		ReDim m_array(0)
+	End Sub
+
+End Class
+
+
+Class DictObject
+	Private m_dict
+
+	Public Sub Add(k,v)
+		if m_dict.Exists(k) Then
+			m_dict.Remove(k)
+		End If
+		m_dict.Add k,v
+	End Sub
+
+	Public Property Get Size()
+		Size = UBound(m_dict.Keys()) + 1
+	End Property
+
+	Public Property Get Key(idx)
+		dim size
+		size = UBound(m_dict.Keys()) + 1
+		if idx < size Then
+			Key=m_dict.Keys()(idx)
+		Else
+			Key=null
+		End If
+	End Property
+
+	Public Sub Append(key,val)
+		dim obj
+		if m_dict.Exists(key) Then
+			m_dict.Item(key).Push(val)
+		Else
+			set obj = new ArrayObject
+			obj.Push(val)
+			m_dict.Add key,obj
+		End If		
+	End Sub
+
+	
+
+	Public Sub Delete(key)
+		m_dict.remove(key)
+	End Sub
+
+	Public Property Get Exists(k)
+		Exists=m_dict.Exists(k)
+	End Property
+
+	Public Property Get Value(k)
+		dim obj
+		On Error Resume Next
+		Err.Clear
+		Value=m_dict.Item(k)
+		if Err.Number <> 0 Then
+			set Value=m_dict.Item(k)
+		End If
+		On Error Goto 0
+	End Property
+
+	Private Sub Class_Initialize()
+		set m_dict = CreateObject("Scripting.Dictionary")
+	End Sub
+
+	Private Sub Class_Terminate()
+		set m_dict=Nothing
+	End Sub
+
+End Class
 

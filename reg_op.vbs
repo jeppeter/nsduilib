@@ -7,16 +7,23 @@ Const HKEY_USERS = &H80000003
 Const HKEY_CURRENT_CONFIG = &H80000004
 
 Function GetRegSubkeys(root,pathkey)
-	dim arraykey,objReg,retval
+	dim arraykey,objReg,retval,retarr
 
 	set objReg = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
-
+	err.number=0
 	retval = objReg.EnumKey(root,pathkey,arraykey)
-	if retval <> 0  or not IsArray(arraykey) Then
-		'wscript.stderr.writeline( "get "&pathkey & " error "&err.number)
+	if retval <> 0  Then
+		wscript.stderr.writeline( "get "&pathkey & " error["& err.number &"]retval"&retval)
 		set objReg = Nothing
 		arraykey=Empty
 		GetRegSubkeys=Empty
+	ElseIf not IsArray(arraykey) Then
+		wscript.stderr.writeline("get["&pathkey&"]ret not array("&arraykey&")")
+		set objReg = Nothing
+		redim retarr(0)
+		retarr(0) = arraykey
+		arraykey=Empty
+		GetRegSubkeys=retarr
 	else
 		set objReg = Nothing
 		GetRegSubkeys=arraykey
@@ -31,6 +38,7 @@ Function ReadReg(key)
 	Err.Number = 0
 	value = objShell.RegRead(key)
 	if Err.Number <> 0 Then
+		Wscript.Stderr.Writeline("read["&key&"] error["&Err&"]")
 		On Error goto 0
 		ReadReg=Empty
 	else

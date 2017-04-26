@@ -9,7 +9,7 @@ check_vs:
 	@cscript //Nologo check_env.vbs visual_studio 10.0 2>>error.txt
 
 check_cmake:
-	@cscript //Nologo check_env.vbs cmake 3.4.0 2>>error.txt
+	@cscript //Nologo check_env.vbs cmake 3.8.0 2>>error.txt
 
 check_nsis:
 	@cscript //Nologo check_env.vbs nsis 3.0 2>>error.txt

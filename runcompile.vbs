@@ -2,15 +2,31 @@
 Option Explicit
 
 
-Function FormatBatch(basedir,compiletarget,slnfile,target,fname)
+Function FormatBatch(basedir,compiletarget,slnfile,target,fname,vsver)
 	dim fso,fh,cmdline
 	set fso = WScript.CreateObject("Scripting.FileSystemObject")
 	set fh = fso.CreateTextFile(fname,True)
 
-	cmdline = "call " & chr(34) & basedir & "\VC\vcvarsall.bat" & chr(34) & " " & compiletarget
-	fh.WriteLine(cmdline)
-	cmdline = chr(34) & basedir & "\Common7\IDE\devenv.exe" & chr(34) & " " & chr(34) & slnfile & chr(34) & " /useenv /build "  & chr(34) & target & chr(34) 
-	fh.WriteLine(cmdline)
+	if vsver = "12.0" or vsver = "14.0" Then
+		cmdline = "call " & chr(34) & basedir & "\VC\vcvarsall.bat" & chr(34) & " " & compiletarget
+		fh.WriteLine(cmdline)
+		cmdline = chr(34) & basedir & "\Common7\IDE\devenv.exe" & chr(34) & " " & chr(34) & slnfile & chr(34) & " /useenv /build "  & chr(34) & target & chr(34) 
+		fh.WriteLine(cmdline)
+	Else
+		if compiletarget = "amd64"  Then
+			cmdline = "call " & chr(34) & basedir & "\VC\Auxiliary\Build\vcvarsall.bat" & chr(34) & " x64"
+			fh.Writeline(cmdline)
+			cmdline = chr(34) & basedir & "\Common7\IDE\devenv.exe" & chr(34) & " " & chr(34) & slnfile & chr(34) & " /useenv /build " & chr(34) & target & chr(34)
+			fh.Writeline(cmdline)
+		Elseif compiletarget = "amd64_x86" Then
+			cmdline = "call " & chr(34) & basedir & "\VC\Auxiliary\Build\vcvarsall.bat" & chr(34) & " x64_x86"
+			fh.Writeline(cmdline)
+			cmdline = chr(34) & basedir & "\Common7\IDE\devenv.exe" & chr(34) & " " & chr(34) & slnfile & chr(34) & " /useenv /build " & chr(34) & target & chr(34)
+			fh.Writeline(cmdline)
+		Else
+			Wscript.Stderr.Writeline("not supported compiletarget["& compiletarget &"]")
+		End If
+	End If
 	fh.Close
 	set fh = Nothing
 	set fso = Nothing
@@ -139,22 +155,14 @@ ParseArgs(args)
 
 dim basedir,vsver,vspdir,iidx,jidx
 
-vsver=IsInstallVisualStudio(10.0,"SOFTWARE\Microsoft\VisualStudio")
-if IsEmpty(vsver) Then
-	wscript.stderr.writeline("Please Install visual studio new version than 10.0")
-	WScript.Quit(3)
+vsver=IsInstallVisualStudio(10.0)
+If IsEmpty(vsver) Then
+    wscript.stderr.writeline("can not find visual studio installed")
+    wscript.Quit(3)
 End If
-
-wscript.stdout.writeline( "vsver " & vsver)
-vspdir=ReadReg("HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\"& vsver &"_Config\InstallDir")
-if IsEmpty(vspdir) Then
+basedir=GetVisualStudioInstdir(10.0)
+if IsEmpty(basedir) Then
 	wscript.stderr.writeline("can not find visual studio install directory")
-	wscript.quit(4)
-End If
-
-basedir=FindoutInstallBasedir(vspdir,vsver)
-if basedir = "" Then
-	wscript.stderr.writeline("can not find visual studio install directory on " & vspdir)
 	wscript.quit(5)
 End If
 
@@ -168,21 +176,9 @@ do while iidx < Ubound(targets)
 		fname = ReplaceString(d,"|","_")
 		fname = fname & ".bat"
 		wscript.stderr.writeline("fname " & fname)
-		call FormatBatch(basedir,m, sln, d, fname)
+		call FormatBatch(basedir,m, sln, d, fname,vsver)
 		call RunCommand(fname)
 	End If
 	iidx = iidx + 1
 Loop
 
-
-dim basedir1,compiletarget1,slnfile1,target1,fname1
-
-basedir1="C:\Program Files (x86)\Microsoft Visual Studio 14.0"
-compiletarget1="amd64"
-'slnfile1="Z:\btvmtool\test\tstaffnitiy\tstaffnitiy.sln"
-slnfile1="tstaffnitiy.sln"
-target1="Release|x64"
-fname1="Z:\btvmtool\test\tstaffnitiy\x64rel.bat"
-
-
-'call FormatBatch(basedir1, compiletarget1, slnfile1, target1, fname1)

@@ -27,7 +27,7 @@ End Function
 Function CheckVisualStudio(basever)
     dim vsver,cmakestr
     dim vscmake
-    vsver = IsInstallVisualStudio(10.0,"SOFTWARE\Microsoft\VisualStudio")
+    vsver = IsInstallVisualStudio(10.0)
     If IsEmpty(vsver) Then
         CheckVisualStudio=false
         Exit Function

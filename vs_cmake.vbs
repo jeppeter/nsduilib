@@ -1,7 +1,12 @@
 Class VSCMakePlatform
 	Public Function GetPlatform(vsver,isamd64)
 		dim retstr
-		if vsver = "14.0" Then
+		if vsver = "15.0" Then
+		    retstr="Visual Studio 15 2017"
+		    if isamd64 Then
+		         retstr = retstr & " Win64"
+		    End If
+		elseif vsver = "14.0" Then
 			retstr="Visual Studio 14 2015"
 			if isamd64 Then
 				retstr= retstr & " Win64"
