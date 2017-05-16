@@ -561,13 +561,13 @@ void DisableConsoleWin()
     int numwnd=0;
     BOOL bret;
     int i;
-    if (st_disabled == 0) {
+    if(st_disabled == 0) {
         ret = get_win_handle_by_classname("ConsoleWindowClass",(int)GetCurrentProcessId(),&pwnd,&wndsize);
         if (ret >= 0) {
-            DEBUG_INFO("get [%d]",ret);
-            st_disabled = 1;
+            DEBUG_INFO("get [%d]",ret);        
             numwnd = ret;
             if (numwnd > 0) {
+                st_disabled = 1;
                 for (i=0;i<numwnd;i++) {
                     DEBUG_INFO("window [0x%p]",pwnd[i]);
                     bret = ShowWindow(pwnd[i],SW_HIDE);
@@ -587,6 +587,8 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 {
     BOOL res = 0;
     std::map<HWND, WNDPROC>::iterator iter = g_windowInfoMap.find( hwnd );
+    //DEBUG_INFO("message [%d] wParam[%d] lParam[%d]",message,wParam,lParam);
+    DisableConsoleWin();
     if ( iter != g_windowInfoMap.end() ) {
 
         if (message == WM_PAINT) {
@@ -595,7 +597,6 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
             ;
         } else if ( message == PBM_SETPOS ) {
             CProgressUI* pProgress = static_cast<CProgressUI*>(g_pFrame->GetPaintManager().FindControl( g_tempParam ));
-            DisableConsoleWin();
             pProgress->SetMaxValue( 30000 );
             if ( pProgress == NULL )
                 return 0;
