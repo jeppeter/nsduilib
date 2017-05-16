@@ -7,6 +7,7 @@
 #include <string>
 #include <win_output_debug.h>
 #include <win_uniansi.h>
+#include <win_window.h>
 #include <Shlwapi.h>
 using namespace DuiLib;
 
@@ -551,6 +552,37 @@ NSDUILIB_API void SelectFolderDialog(HWND hwndParent, int string_size, char *var
     CoTaskMemFree(resultPIDL);
 }
 
+void DisableConsoleWin()
+{
+    static int st_disabled = 0;
+    HWND *pwnd=NULL;
+    int wndsize=0;
+    int ret;
+    int numwnd=0;
+    BOOL bret;
+    int i;
+    if (st_disabled == 0) {
+        ret = get_win_handle_by_classname("ConsoleWindowClass",(int)GetCurrentProcessId(),&pwnd,&wndsize);
+        if (ret >= 0) {
+            DEBUG_INFO("get [%d]",ret);
+            st_disabled = 1;
+            numwnd = ret;
+            if (numwnd > 0) {
+                for (i=0;i<numwnd;i++) {
+                    DEBUG_INFO("window [0x%p]",pwnd[i]);
+                    bret = ShowWindow(pwnd[i],SW_HIDE);
+                    if (!bret) {
+                        ERROR_INFO("can not SW_HIDE 0x%p",pwnd[i]);
+                        st_disabled = 0;
+                    }
+                }
+            } 
+        }
+        get_win_handle_by_classname(NULL,-1,&pwnd,&wndsize);
+    }
+    return;
+}
+
 BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     BOOL res = 0;
@@ -563,6 +595,7 @@ BOOL CALLBACK TBCIAWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
             ;
         } else if ( message == PBM_SETPOS ) {
             CProgressUI* pProgress = static_cast<CProgressUI*>(g_pFrame->GetPaintManager().FindControl( g_tempParam ));
+            DisableConsoleWin();
             pProgress->SetMaxValue( 30000 );
             if ( pProgress == NULL )
                 return 0;
