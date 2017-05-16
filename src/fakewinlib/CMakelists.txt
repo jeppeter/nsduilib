@@ -1,0 +1,9 @@
+set(CMAKE_BUILD_TYPE Release) 
+
+file(GLOB WINLIB_SRCS "win_*.cpp")
+add_library(winlib STATIC ${WINLIB_SRCS})
+
+target_include_directories(winlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+ChangeStaticRuntimeLib()
+

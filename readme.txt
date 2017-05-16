@@ -12,6 +12,7 @@
  visual studio 2013或更新的版本 (已经支持visual studio 2017)
  cmake 3.8.0 或更新的版本
  nsis 3.0.2 或更新的版本
+ git 2.0 或更新的版本
 
 本软件最初由
 TBCIA团队出品

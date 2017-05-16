@@ -27,18 +27,27 @@ example\plugin\nsduilib.dll:build\nsduilib\Release\nsduilib.dll
 build\nsduilib\Release\nsduilib.dll:build\nsduilib.sln
 	@cscript //Nologo runcompile.vbs -s build\nsduilib.sln -t "Release|Win32" "amd64_x86"
 
-build\nsduilib.sln:clibs\winlib\winlib.lib
+build\nsduilib.sln:src\winlib\CMakelists.txt
 	@mkdir build  || echo "build already exist"
 	@(cd build && cmake ..\src && cd ..) 
 	@cscript //Nologo change_precomp.vbs build\duilib\duilib.vcxproj
 
-clibs\winlib\winlib.lib:clibs
-	@cd clibs\winlib &&  cscript //Nologo ..\..\runmake.vbs -v STATICLIB=1 makefile.win all && cd ..\.. || echo "can not compile winlib" >&2
+src\winlib\CMakelists.txt:src\winlib src\fakewinlib\CMakelists.txt
+	@(copy src\fakewinlib\CMakelists.txt src\winlib)
+
+src\winlib:clibs\winlib
+	@mkdir src\winlib || echo "" >NUL
+	@(xcopy /E /Y clibs\winlib src\winlib) || echo "" >NUL
+
+
+
+clibs\winlib:clibs
 
 clibs:
 	@git clone https://github.com/jeppeter/clibs.git
 
 clean:
-	@ rmdir /s /q build 2>NUL || echo ""
+	@ rmdir /s /q src\winlib 2>NUL || echo "" >NUL
+	@ rmdir /s /q build 2>NUL || echo "" >NUL
 	@ del example\plugin\nsduilib.dll 2>NUL
 	@ del example\360SafeSetup.exe 2>NUL
