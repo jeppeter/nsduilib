@@ -7,8 +7,8 @@ file(GLOB UTILS_UILIB_SRCS "Utils/*.cpp")
 file(GLOB UTILS_UILIB_CFILES "Utils/*.c")
 add_library(duilib STATIC ${CONTROL_UILIB_SRCS} ${CORE_UILIB_SRCS} ${LAYOUT_UILIB_SRCS} ${UTILS_UILIB_SRCS} ${UTILS_UILIB_CFILES} StdAfx.cpp)
 
-target_include_directories(duilib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../output_debug ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(duilib output_debug)
+target_include_directories(duilib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../clibs/winlib ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(duilib winlib)
 
 ChangeStaticRuntimeLib()
 

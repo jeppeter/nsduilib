@@ -1,5 +1,5 @@
 #include "editui.h"
-#include <output_debug.h>
+#include <win_output_debug.h>
 
 EditUIWnd::EditUIWnd(LPCTSTR pszXMLPath)
     : CXMLWnd(pszXMLPath)

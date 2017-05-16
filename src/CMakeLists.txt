@@ -8,7 +8,7 @@ add_definitions(-DUNICODE -D_UNICODE)
 set(CMAKE_BUILD_TYPE Release) 
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
-add_subdirectory(output_debug)
+#add_subdirectory(output_debug)
 add_subdirectory(duilib)
 add_subdirectory(nsduilib)
 add_subdirectory(test/editui)

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "SkinEngine.h"
 #include "api.h"
-#include "output_debug.h"
+#include <win_output_debug.h>
 #include <atlconv.h>
 
 extern extra_parameters* g_pluginParms;

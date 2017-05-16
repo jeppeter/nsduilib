@@ -3,7 +3,7 @@ PATH=$(PATH);\nosuch
 
 all:check_env example\360SafeSetup.exe
 
-check_env:check_vs check_cmake check_nsis
+check_env:check_vs check_cmake check_nsis check_git
 
 check_vs:
 	@cscript //Nologo check_env.vbs visual_studio 10.0 2>>error.txt
@@ -13,6 +13,9 @@ check_cmake:
 
 check_nsis:
 	@cscript //Nologo check_env.vbs nsis 3.0 2>>error.txt
+
+check_git:
+	@cscript //Nologo check_env.vbs git 2.0 2>>error.txt
 
 example\360SafeSetup.exe:example\plugin\nsduilib.dll  example\360SafeSetup.nsi
 	@cd example &&  makensis 360SafeSetup.nsi && cd .. || cd ..
@@ -24,11 +27,16 @@ example\plugin\nsduilib.dll:build\nsduilib\Release\nsduilib.dll
 build\nsduilib\Release\nsduilib.dll:build\nsduilib.sln
 	@cscript //Nologo runcompile.vbs -s build\nsduilib.sln -t "Release|Win32" "amd64_x86"
 
-build\nsduilib.sln:
+build\nsduilib.sln:clibs\winlib\winlib.lib
 	@mkdir build  || echo "build already exist"
 	@(cd build && cmake ..\src && cd ..) 
 	@cscript //Nologo change_precomp.vbs build\duilib\duilib.vcxproj
 
+clibs\winlib\winlib.lib:clibs
+	@cd clibs\winlib &&  cscript //Nologo ..\..\runmake.vbs -v STATICLIB=1 makefile.win all && cd ..\.. || echo "can not compile winlib" >&2
+
+clibs:
+	@git clone https://github.com/jeppeter/clibs.git
 
 clean:
 	@ rmdir /s /q build 2>NUL || echo ""

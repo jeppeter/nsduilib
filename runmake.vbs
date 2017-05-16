@@ -219,6 +219,25 @@ if argobj.Exists("versionvar") Then
 End If
 
 If argobj.Value("novc") Then
+	if argobj.Exists("vars") Then
+		dim temparr1
+		dim curvar
+		dim curkey,curval
+		dim arr1
+		set temparr1 = argobj.Value("vars")
+		j = 0
+		jmax = temparr1.Size()
+		Do While j < jmax
+			curvar = temparr1.GetItem(j)
+			arr1=Split(curvar,"=")
+			curkey=arr1(0)
+			curval=arr1(1)
+			SetEnv curkey,curval
+			j = j + 1
+		Loop
+	End If
+
+
 	if argobj.Exists("args") Then
 		set arrobj = argobj.Value("args")
 		makefile=arrobj.GetItem(0)
@@ -257,7 +276,7 @@ Else
 	runcon = runcon & "cscript.exe //Nologo " & chr(34) & WScript.ScriptFullName & chr(34)
 	runcon = runcon & " --novc"
 	If argobj.Exists("timestamp") Then
-		runcon = runcon & " " & chr(34) & argobj.Value("timestamp") & chr(34)
+		runcon = runcon & " --timestamp " & chr(34) & argobj.Value("timestamp") & chr(34)
 	End If
 
 	If argobj.Exists("check") Then
