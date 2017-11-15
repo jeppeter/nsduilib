@@ -6,6 +6,7 @@
 #include <atlconv.h>
 #include <string>
 #include <win_output_debug.h>
+#include <win_fileop.h>
 #include <win_uniansi.h>
 #include <win_window.h>
 #include <Shlwapi.h>
@@ -37,8 +38,16 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
     return 0;
 }
 
+
 NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
+    TCHAR* ptfullpath=NULL;
+    int tfullsize=0;
+    char* pfullpath=NULL;
+    int fullsize=0;
+    char* pskinpath=NULL;
+    int skinsize=0;
+    int ret;
     g_pluginParms = extra;
     EXDLL_INIT();
     extra->RegisterPluginCallback(g_hInstance, PluginCallback);
@@ -58,38 +67,63 @@ NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *va
         popstring( installPageTabName, sizeof(installPageTabName)); // 安装页面tab的名字
         popstring(guiname, sizeof(guiname));
 
+        ret = TcharToAnsi(skinPath,&pskinpath,&skinsize);
+        if (ret < 0) {
+            goto fail;
+        }
+
+        ret = get_full_path(pskinpath,&pfullpath,&fullsize);
+        if (ret < 0) {
+            goto fail;
+        }
+
+        DEBUG_INFO("[%s] => [%s]", pskinpath,pfullpath);
+
+        ret = AnsiToTchar(pfullpath,&ptfullpath,&tfullsize);
+        if (ret < 0) {
+            goto fail;
+        }
+
         DuiLib::CPaintManagerUI::SetInstance(g_hInstance);
         /*now to set for the zip file*/
 
         g_installPageTabName = installPageTabName;
-        g_skinPath = skinPath;
+        g_skinPath = ptfullpath;
 
         g_pFrame = new DuiLib::CSkinEngine();
         if ( g_pFrame == NULL ) {
-            pushint(0);
-            return;
+            goto fail;
         }
-        pZip = StrStrI(skinPath, _T(".zip"));
+        pZip = StrStrI(ptfullpath, _T(".zip"));
         if (pZip && pZip[4] == 0x0 ) {
-            pDir =  wcsrchr(skinPath, L'\\');
+            pDir =  wcsrchr(ptfullpath, L'\\');
             if (pDir == NULL) {
-                g_pFrame->SetZipFile(skinPath);
+                g_pFrame->SetZipFile(ptfullpath);
             } else {
                 *pDir = 0x0;
                 pDir ++;
-                CPaintManagerUI::SetResourcePath(skinPath);
+                CPaintManagerUI::SetResourcePath(ptfullpath);
                 g_pFrame->SetZipFile(pDir);
             }
         } else {
-            CPaintManagerUI::SetResourcePath(skinPath);
+            CPaintManagerUI::SetResourcePath(ptfullpath);
         }
         g_pFrame->SetSkinXMLPath( skinLayoutFileName );
         g_pFrame->Create( NULL, guiname, UI_WNDSTYLE_FRAME, WS_EX_STATICEDGE | WS_EX_APPWINDOW );
         g_pFrame->CenterWindow();
         ShowWindow( g_pFrame->GetHWND(), FALSE );
-
         pushint( int(g_pFrame->GetHWND()));
     }
+    TcharToAnsi(NULL,&pskinpath,&skinsize);
+    AnsiToTchar(NULL,&ptfullpath,&tfullsize);
+    get_full_path(NULL,&pfullpath,&fullsize);
+    return;
+fail:
+    TcharToAnsi(NULL,&pskinpath,&skinsize);
+    AnsiToTchar(NULL,&ptfullpath,&tfullsize);
+    get_full_path(NULL,&pfullpath,&fullsize);
+    pushint(0);
+    return;
 }
 
 NSDUILIB_API void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
