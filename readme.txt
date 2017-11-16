@@ -20,3 +20,6 @@ TBCIA团队出品
                (qq:153139715)
 后经jeppeter修正
 联系方式: jeppeter@gmail.com
+
+历史记录：
+2017.11.16  增加了处理shortname变成longname的模式，参见InitTBCIASkinEngine
