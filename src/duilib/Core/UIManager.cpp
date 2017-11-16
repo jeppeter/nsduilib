@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 #include <stdlib.h>
+#include <win_uniansi.h>
 
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
 typedef DWORD ZRESULT;
@@ -1165,6 +1166,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
 {
     ASSERT(::IsWindow(m_hWndPaint));
     // Reset any previous attachment
+    DEBUG_INFO(" ");
     SetFocus(NULL);
     m_pEventKey = NULL;
     m_pEventHover = NULL;
@@ -1182,6 +1184,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     m_bUpdateNeeded = true;
     m_bFirstLayout = true;
     m_bFocusNeeded = true;
+    DEBUG_INFO(" ");
     // Initiate all control
     return InitControls(pControl);
 }
@@ -1189,9 +1192,13 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
 bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*= NULL*/)
 {
     ASSERT(pControl);
+    DEBUG_INFO(" ");
     if( pControl == NULL ) return false;
+    DEBUG_INFO(" ");
     pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent(), true);
+    DEBUG_INFO(" ");
     pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
+    DEBUG_INFO(" ");
     return true;
 }
 
@@ -1205,7 +1212,17 @@ void CPaintManagerUI::ReapObjects(CControlUI* pControl)
     KillTimer(pControl);
     const CDuiString& sName = pControl->GetName();
     if( !sName.IsEmpty() ) {
-        if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
+        if( pControl == FindControl(sName) ) {
+            int ret;
+            char* pname=NULL;
+            int namesize=0;
+            m_mNameHash.Remove(sName);
+            ret = TcharToAnsi((TCHAR*)sName.GetData(),&pname,&namesize);
+            if (ret >= 0) {
+                DEBUG_INFO("remove [%s]",pname);
+                TcharToAnsi(NULL,&pname,&namesize);
+            }
+        }
     }
     for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
         TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
@@ -2569,9 +2586,17 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThi
 {
     CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(pData);
     const CDuiString& sName = pThis->GetName();
+    int ret;
+    char* pname=NULL;
+    int namesize=0;
     if( sName.IsEmpty() ) return NULL;
     // Add this control to the hash list
     pManager->m_mNameHash.Set(sName, pThis);
+    ret = TcharToAnsi((TCHAR*)sName.GetData(),&pname,&namesize);
+    if (ret >= 0) {
+        DEBUG_INFO("insert [%s] [%p]",pname,pThis);
+        TcharToAnsi(NULL,&pname,&namesize);
+    }
     return NULL; // Attempt to add all controls
 }
 

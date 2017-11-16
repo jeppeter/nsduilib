@@ -38,6 +38,7 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
     return 0;
 }
 
+
 NSDUILIB_API void InitTBCIASkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
     TCHAR* ptfullpath=NULL;
@@ -597,7 +598,6 @@ void DisableConsoleWin()
     if(st_disabled == 0) {
         ret = get_win_handle_by_classname("ConsoleWindowClass",(int)GetCurrentProcessId(),&pwnd,&wndsize);
         if (ret >= 0) {
-            DEBUG_INFO("get [%d]",ret);        
             numwnd = ret;
             if (numwnd > 0) {
                 st_disabled = 1;

@@ -139,7 +139,7 @@ FunctionEnd
 
 
 Function 360Safe
-    !insertmacro DEBUG_INFO ""
+   !insertmacro DEBUG_INFO "outres [$temp\${PRODUCT_NAME_EN}Setup\res]"
    ;初始化窗口          
    nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "InstallPackages.xml" "WizardTab" "360SafeSetup"
    Pop $Dialog
@@ -248,7 +248,8 @@ FunctionEnd
 
 
 Function un.360SafeUninstall
-   ;初始化窗口          
+   ;初始化窗口   
+   !insertmacro DEBUG_INFO "outres [$temp\${PRODUCT_NAME_EN}Setup\res]"
    nsduilib::InitTBCIASkinEngine /NOUNLOAD "$temp\${PRODUCT_NAME_EN}Setup\res" "UninstallPackages.xml" "WizardTab" "360SafeUninstaller"
    Pop $Dialog
 

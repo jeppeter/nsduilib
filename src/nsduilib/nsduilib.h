@@ -124,6 +124,7 @@ to free skin engine and free resource
 ******************************************/
 NSDUILIB_API void FreeSkinEngine(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra);
 
+
 #endif
 
 

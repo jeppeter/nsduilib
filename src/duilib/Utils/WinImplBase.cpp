@@ -323,10 +323,13 @@ LRESULT WindowImplBase::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	if (GetResourceType()==UILIB_RESOURCE)
 	{
 		STRINGorID xml(_ttoi(GetSkinFile().GetData()));
+		DEBUG_INFO(" ");
 		pRoot = builder.Create(xml, _T("xml"), this, &m_PaintManager);
 	}
-	else
+	else {
+		DEBUG_INFO(" ");
 		pRoot = builder.Create(GetSkinFile().GetData(), (UINT)0, this, &m_PaintManager);
+	}
 	ASSERT(pRoot);
 	if (pRoot==NULL)
 	{
