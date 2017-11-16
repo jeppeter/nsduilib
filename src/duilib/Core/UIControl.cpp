@@ -84,19 +84,11 @@ CPaintManagerUI* CControlUI::GetManager() const
     return m_pManager;
 }
 
-typedef void (*InitFn)();
-
 void CControlUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
 {
     m_pManager = pManager;
     m_pParent = pParent;
-    DEBUG_INFO("[%p] SetManager [%p] pParent [%p] init [%s]",
-        this,pManager,pParent, bInit ? "true" : "false");
-    if( bInit && m_pParent ) {
-        DEBUG_INFO(" ");
-        Init();
-    }
-    DEBUG_INFO(" ");
+    if( bInit && m_pParent ) Init();
 }
 
 CControlUI* CControlUI::GetParent() const
@@ -633,7 +625,6 @@ void CControlUI::SetFloat(bool bFloat)
 
 CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
 {
-    DEBUG_INFO("pData[%p]",pData);
     if( (uFlags & UIFIND_VISIBLE) != 0 && !IsVisible() ) return NULL;
     if( (uFlags & UIFIND_ENABLED) != 0 && !IsEnabled() ) return NULL;
 	if( (uFlags & UIFIND_HITTEST) != 0 && (!m_bMouseEnabled || !::PtInRect(&m_rcItem, * static_cast<LPPOINT>(pData))) ) return NULL;

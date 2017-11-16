@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include <win_uniansi.h>
 
 namespace DuiLib {
 
@@ -24,45 +23,28 @@ CControlUI* CDialogBuilder::Create(STRINGorID xml, LPCTSTR type, IDialogBuilderC
     }
     else {
         HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
-        if( hResource == NULL ) {
-            DEBUG_INFO(" ");
-            return NULL;
-        }
+        if( hResource == NULL ) return NULL;
         HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
         if( hGlobal == NULL ) {
             FreeResource(hResource);
-            DEBUG_INFO(" ");
             return NULL;
         }
 
         m_pCallback = pCallback;
-        if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) {
-            DEBUG_INFO(" ");
-            return NULL;
-        }
+        if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) return NULL;
         ::FreeResource(hResource);
         m_pstrtype = type;
     }
 
-    DEBUG_INFO(" ");
     return Create(pCallback, pManager, pParent);
 }
 
 CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintManagerUI* pManager, CControlUI* pParent)
 {
-    int res2;
-    char* pclassname=NULL;
-    int classlen=0;
-    char* pvalue=NULL;
-    int valuelen = 0;
     m_pCallback = pCallback;
     CMarkupNode root = m_xml.GetRoot();
-    if( !root.IsValid() ) {
-        DEBUG_INFO(" ");
-        return NULL;
-    }
+    if( !root.IsValid() ) return NULL;
 
-    DEBUG_INFO("pManager [%p]", pManager);
     if( pManager ) {
         LPCTSTR pstrClass = NULL;
         int nAttributes = 0;
@@ -71,11 +53,6 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
         LPTSTR pstr = NULL;
         for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) {
             pstrClass = node.GetName();
-            res2 = TcharToAnsi((TCHAR*)pstrClass,&pclassname,&classlen);
-            if (res2 >= 0) {
-                DEBUG_INFO("class [%s]",pclassname);
-                TcharToAnsi(NULL,&pclassname,&classlen);
-            }
             if( _tcsicmp(pstrClass, _T("Image")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
                 LPCTSTR pImageName = NULL;
@@ -187,27 +164,12 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
         }
 
         pstrClass = root.GetName();
-        res2 = TcharToAnsi((TCHAR*)pstrClass, &pclassname,&classlen);
-        if (res2 >= 0) {
-            DEBUG_INFO("class [%s]" ,pclassname);
-            TcharToAnsi(NULL,&pclassname,&classlen);
-        }
         if( _tcsicmp(pstrClass, _T("Window")) == 0 ) {
-            DEBUG_INFO("GetPaintWindow() [%p]", pManager->GetPaintWindow());
             if( pManager->GetPaintWindow() ) {
                 int nAttributes = root.GetAttributeCount();
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = root.GetAttributeName(i);
                     pstrValue = root.GetAttributeValue(i);
-                    res2 = TcharToAnsi((TCHAR*)pstrName,&pclassname,&classlen);
-                    if (res2 >= 0) {
-                        res2 = TcharToAnsi((TCHAR*)pstrValue, &pvalue,&valuelen);
-                        if (res2 >= 0) {
-                            DEBUG_INFO("[%s]=[%s]",pclassname,pvalue);
-                        }
-                    }
-                    TcharToAnsi(NULL,&pclassname,&classlen);
-                    TcharToAnsi(NULL,&pvalue,&valuelen);
                     if( _tcsicmp(pstrName, _T("size")) == 0 ) {
                         LPTSTR pstr = NULL;
                         int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
@@ -315,16 +277,8 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 {
     IContainerUI* pContainer = NULL;
     CControlUI* pReturn = NULL;
-    int res2;
-    char* pclass=NULL;
-    int classlen=0;
     for( CMarkupNode node = pRoot->GetChild() ; node.IsValid(); node = node.GetSibling() ) {
         LPCTSTR pstrClass = node.GetName();
-        res2 = TcharToAnsi((TCHAR*)pstrClass,&pclass,&classlen);
-        if (res2 >= 0) {
-            DEBUG_INFO("[%p].class [%s] pParent[%p]",pRoot,pclass, pParent);
-        }
-        TcharToAnsi(NULL,&pclass,&classlen);
         if( _tcsicmp(pstrClass, _T("Image")) == 0 || _tcsicmp(pstrClass, _T("Font")) == 0 \
             || _tcsicmp(pstrClass, _T("Default")) == 0 
 			|| _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) continue;
@@ -411,11 +365,6 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 			DUITRACE(_T("Create Control: %s"), pstrClass);
 #endif
             SIZE_T cchLen = _tcslen(pstrClass);
-            res2 = TcharToAnsi((TCHAR*)pstrClass,&pclass,&classlen);
-            if (res2 >= 0) {
-                DEBUG_INFO("[%p].class [%s] len[%d] pParent[%p]",pRoot,pclass, pParent, cchLen);
-            }
-            TcharToAnsi(NULL,&pclass,&classlen);
             switch( cchLen ) {
             case 4:
                 if( _tcsicmp(pstrClass, DUI_CTR_EDIT) == 0 )                   pControl = new CEditUI;
@@ -545,7 +494,6 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
         // Return first item
         if( pReturn == NULL ) pReturn = pControl;
     }
-    DEBUG_INFO("pReturn [%p]", pReturn);
     return pReturn;
 }
 
