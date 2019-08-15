@@ -19,12 +19,17 @@ call includeFile( GetScriptDir() & "\vs_find.vbs")
 call includeFile( GetScriptDir() & "\base_func.vbs")
 call includeFile( GetScriptDir() & "\vs_cmake.vbs")
 
-Function CmakeRun(platform,srcdir,dstdir,args)
-	dim cmd,retdir,curd,absdst,abssrc,unum
-	retdir = GetCwd()
-	abssrc = GetAbsPath(srcdir)
-	absdst = GetAbsPath(dstdir)
-	cmd = "cmake  -G " & chr(34) & platform & chr(34)
+
+Function FormatCmakeBatch(outfile,vsver,basedir,compiletarget,platform,abssrc,absdst,args)
+	dim fso,fh,cmdline,unum
+	set fso = WScript.CreateObject("Scripting.FileSystemObject")
+	set fh = fso.CreateTextFile(outfile,True)
+
+	fh.WriteLine(GetVsAllBatchCall(vsver,basedir,compiletarget))
+	cmdline = "cd " & absdst
+	fh.WriteLine(cmdline)
+
+	cmdline = "cmake.exe " & platform 
 	On error resume next
 	Err.Number = 0
 	unum = Ubound(args)
@@ -33,18 +38,28 @@ Function CmakeRun(platform,srcdir,dstdir,args)
 	else
 		for each  unum in args
 			If unum <> "" Then
-				cmd = cmd & " " & chr(34) & unum & chr(34)
+				cmdline = cmdline & " " & chr(34) & unum & chr(34)
 			End If
 		Next
 	End If
+	cmdline = cmdline & " " & abssrc 
+	fh.WriteLine(cmdline)
+	fh.Close
+	set fso = Nothing
+	set fh = Nothing	
+End Function
 
-	' to add the src dir
-	cmd = cmd & " " & chr(34) & abssrc & chr(34)
-	' now change directory
-	cmd = "cmd.exe /C " & cmd
+Function CmakeRun(vsver,basedir,compiletarget,platform,srcdir,dstdir,args)
+	dim cmd,retdir,curd,absdst,abssrc,unum
+	dim batchfile
+	retdir = GetCwd()
+	abssrc = GetAbsPath(srcdir)
+	absdst = GetAbsPath(dstdir)
+	' for \ is 92
+	batchfile = absdst & chr(92) & "cmakerun.bat"
 	Chdir(absdst)
-	wscript.stdout.writeline("cmd (" & cmd &")")
-	RunCommand(cmd)
+	FormatCmakeBatch batchfile,vsver,basedir,compiletarget,platform,abssrc,absdst,args
+	RunCommand(batchfile)
 	Chdir(retdir)
 End Function
 
@@ -61,10 +76,10 @@ Function Usage(ec,fmt)
 	End if
 	fh.Writeline(WScript.ScriptName & " [OPTIONS] -- [CMAKE_OPTIONS]")
 	fh.Writeline(chr(9) &"-h|--help                    to display this information")
-	fh.Writeline(chr(9) &"-d|--dir directory        to specify the directory running cmake")
-	fh.Writeline(chr(9) &"-s|--source directory  to specify the source directory")
-	fh.Writeline(chr(9) &"-a|--arch arch            to specify arch it can accept(x64|x86)")
-	fh.Writeline(chr(9) &"--                                to stop parse args ,next is for cmake")
+	fh.Writeline(chr(9) &"-d|--dir directory           to specify the directory running cmake")
+	fh.Writeline(chr(9) &"-s|--source directory        to specify the source directory")
+	fh.Writeline(chr(9) &"-a|--arch arch               to specify arch it can accept(x64|x86)")
+	fh.Writeline(chr(9) &"--                           to stop parse args ,next is for cmake")
 	WScript.Quit(ec)
 End Function
 
@@ -172,15 +187,17 @@ if IsEmpty(basedir) Then
 End If
 
 wscript.stdout.writeline("basedir ("& basedir & ")")
-
+dim compiletarget
 set vscmake = new VSCMakePlatform
 if cmakearch = "x64" Then
 	platform = vscmake.GetPlatform(vsver,1)
+	compiletarget = "amd64"
 Else
 	platform = vscmake.GetPlatform(vsver,0)
+	compiletarget = "amd64_x86"
 End If
 
 wscript.stdout.writeline("Get Platform (" & platform &")")
 
-call CmakeRun(platform, sourcedir,cmakedir,cmakeargs)
+call CmakeRun(vsver,basedir,compiletarget,platform, sourcedir,cmakedir,cmakeargs)
 

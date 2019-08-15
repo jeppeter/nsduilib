@@ -101,10 +101,10 @@ Function ParseArgs(args)
 				Usage 3,args(i) & " need arg"
 			End If
 			If args(i+1) = "amd64" or args(i+1) = "x86" or _
-				args(i+1) = "x86_amd64" or args(i+1) = "x86_arm" Then
+				args(i+1) = "x86_amd64" or args(i+1) = "x86_arm" or args(i+1) = "x64" Then
 				argobj.Add "vcmode",args(i+1)
 			Else
-				Usage 5,args(i) & " not in [amd64|x86|x86_arm|x86_amd64]"
+				Usage 5,args(i) & " not in [amd64|x86|x86_arm|x86_amd64|x64]"
 			End If
 			i = i + 1
 		Elseif args(i) = "-N" or args(i) = "--novc" Then
@@ -267,7 +267,7 @@ Else
 	runcon = ""
 	if vsver = "12.0" or vsver = "14.0" Then
 		runcon = runcon & "call " & chr(34) & basedir & "\VC\vcvarsall.bat" & chr(34) & " "  & argobj.Value("vcmode")  & chr(13) & chr(10)
-	Elseif vsver = "15.0" Then
+	Elseif vsver = "15.0" or vsver = "16.0" Then
 		runcon = runcon & "call " & chr(34) & basedir & "\VC\Auxiliary\Build\vcvarsall.bat" & chr(34) & " " & argobj.Value("vcmode") & chr(13) & chr(10)
 	Else
 		Wscript.Stderr.Writeline("vsver["&vsver&"]not supported")

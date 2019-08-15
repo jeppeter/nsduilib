@@ -3,7 +3,7 @@ PATH=$(PATH);\nosuch
 
 all:check_env example\360SafeSetup.exe
 
-check_env:check_vs check_cmake check_nsis check_git
+check_env:check_vs check_nsis check_git check_cmake
 
 check_vs:
 	@cscript //Nologo check_env.vbs visual_studio 10.0 2>>error.txt

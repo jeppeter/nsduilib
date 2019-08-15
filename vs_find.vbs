@@ -80,8 +80,8 @@ Function IsInstallVisualStudio(version)
 	dim max
 	dim devcom
 	dim getversion
-	versions=Array(15.0,14.0,12.0)
-	values=Array("15.0","14.0","12.0")
+	versions=Array(16.0,15.0,14.0,12.0)
+	values=Array("16.0","15.0","14.0","12.0")
 	devcom=GetDevenvCom()
 	if IsEmpty(devcom) Then
 		' nothing to get ,so we return error
@@ -126,7 +126,7 @@ Function GetVisualStudioInstdir(version)
 	dim max
 	dim devcom
 	dim getversion
-	versions=Array(15.0,14.0,12.0)
+	versions=Array(16.0,15.0,14.0,12.0)
 	devcom=GetDevenvCom()
 	if IsEmpty(devcom) Then
 		' nothing to get ,so we return error
@@ -160,7 +160,7 @@ Function GetNmake(basedir,vsver)
 			Exit Function
 		End If
 		GetNmake=Empty
-	ElseIf vsver = "15.0" Then
+	ElseIf vsver = "15.0" or vsver = "16.0" Then
 		msvcdir= basedir & "\VC\Tools\MSVC"
 		reads = ReadDir(msvcdir)
 		arrdir = Split(reads,";")
@@ -184,3 +184,27 @@ Function GetNmake(basedir,vsver)
 	End If	
 End Function
 
+Function GetVsAllBatchCall(vsver,basedir,compiletarget)
+	dim cmdline
+	cmdline=""
+	if vsver = "12.0" or vsver = "14.0" Then
+		cmdline="Call " & chr(34) & basedir & "\VC\vcvarsall.bat" & chr(34) & " " & compiletarget & " >NUL"
+	Else
+		if compiletarget = "amd64" Then
+			cmdline="call " & chr(34) & basedir & "\VC\Auxiliary\Build\vcvarsall.bat" & chr(34) & " x64" & " >NUL"
+		ElseIf compiletarget = "amd64_x86" Then
+			cmdline = "call " & chr(34) & basedir & "\VC\Auxiliary\Build\vcvarsall.bat" & chr(34) & " x64_x86" & " >NUL"
+		Else
+			WScript.Stderr.writeline("not supported compiletarget[" & compiletarget & "]")
+		End If
+	End If
+
+	GetVsAllBatchCall=cmdline
+End Function
+
+
+Function GetDevenvSlnRun(vsver,slnfile,basedir,target)
+	dim cmdline
+	cmdline = chr(34) & basedir & "\Common7\IDE\devenv.exe" & chr(34) & " " & chr(34) & slnfile & chr(34) & " /useenv /build "  & chr(34) & target & chr(34) 
+	GetDevenvSlnRun=cmdline
+End Function

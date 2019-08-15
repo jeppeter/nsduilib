@@ -152,15 +152,15 @@ Function VersionCompare(basever,cmpver)
 
 	For i =0 to maxlen Step 1
 		if i > baselen Then
-			curbase = "0"
+			curbase = 0
 		Else
-			curbase = basearr(i)
+			curbase = CInt(basearr(i))
 		End If
 
 		If i > cmplen Then
-			curcmp = "0"
+			curcmp = 0
 		Else
-			curcmp = cmparr(i)
+			curcmp = CInt(cmparr(i))
 		End If
 		If curcmp < curbase Then
 			VersionCompare=false
@@ -187,8 +187,10 @@ Function GetRunOut(exefile,commands,ByRef filterfunc,ByRef filterctx)
         line = execobj.Stdout.ReadLine()
 
         Execute("retval = " & filterfunc & "(line," & filterctx & ")")      
-        If retval Then
+        If not retval Then
             retline = retline & line & chr(13) & chr(10)
+        Else
+        	Exit Do
         End If
     Loop
     GetRunOut=retline
