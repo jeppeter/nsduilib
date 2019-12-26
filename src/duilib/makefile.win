@@ -1,0 +1,107 @@
+CURDIR=$(MAKEDIR)
+TOPDIR=$(CURDIR)\..\..
+BASENAME=duilib
+
+
+
+!IFDEF UNICODE_MODE
+!IF $(UNICODE_MODE) != 0
+UNICODE_CFLAGS=/D UNICODE /D _UNICODE
+!ELSE
+UNICODE_CFLAGS=
+!ENDIF
+!ELSE
+UNICODE_CFLAGS=
+!ENDIF
+
+!IFDEF MAKEVERBOSE
+!IF $(MAKEVERBOSE) != 0
+
+QUIETCMD=
+NOLOGO_CFLAGS=
+NOLOGO_LDFLAGS=
+NOLOGO_ARFLAGS=
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=
+
+!ELSE
+
+QUIETCMD=@
+NOLOGO_CFLAGS=/nologo
+NOLOGO_LDFLAGS=/nologo
+NOLOGO_ARFLAGS=/nologo
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=/nologo
+
+!ENDIF
+
+!ELSE
+QUIETCMD=@
+NOLOGO_CFLAGS=/nologo
+NOLOGO_LDFLAGS=/nologo
+NOLOGO_ARFLAGS=/nologo
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=/nologo
+
+!ENDIF
+
+!IF  "$(INST_ARCH)" == "x64"
+ARCH_LIBFLAGS=/MACHINE:X64
+!ELSE
+ARCH_LIBFLAGS=/MACHINE:X86
+!ENDIF
+
+
+
+CC=cl.exe
+LIBEXE=lib.exe
+
+INCLUDE_CFLAGS=/I$(TOPDIR)\clibs\winlib /I$(MAKEDIR)
+PRE_CFLAGS=/c $(INCLUDE_CFLAGS) $(NOLOGO_CFLAGS) /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D _WINDOWS /D NDEBUG $(UNICODE_CFLAGS) /D UILIB_STATIC /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR  
+
+POST_CFLAGS=/Fd"$(CURDIR)\$(BASENAME).pdb" /Gd /TP
+
+
+
+DUILIB_FLAGS=$(NOLOGO_LDFLAGS) $(ARCH_LIBFLAGS)
+DUILIB_CPP_SOURCES = $(CURDIR)\Control\UIActiveX.cpp $(CURDIR)\Control\UIButton.cpp $(CURDIR)\Control\UICheckBox.cpp \
+	$(CURDIR)\Control\UICombo.cpp $(CURDIR)\Control\UIDateTime.cpp $(CURDIR)\Control\UIEdit.cpp $(CURDIR)\Control\UIFlash.cpp \
+	$(CURDIR)\Control\UILabel.cpp $(CURDIR)\Control\UIList.cpp $(CURDIR)\Control\UIOption.cpp $(CURDIR)\Control\UIProgress.cpp \
+	$(CURDIR)\Control\UIRichEdit.cpp $(CURDIR)\Control\UIScrollBar.cpp $(CURDIR)\Control\UISlider.cpp \
+	$(CURDIR)\Control\UIText.cpp $(CURDIR)\Control\UITreeView.cpp $(CURDIR)\Control\UIWebBrowser.cpp $(CURDIR)\Core\UIBase.cpp \
+	$(CURDIR)\Core\UIContainer.cpp $(CURDIR)\Core\UIControl.cpp $(CURDIR)\Core\UIDlgBuilder.cpp $(CURDIR)\Core\UIManager.cpp \
+	$(CURDIR)\Core\UIMarkup.cpp $(CURDIR)\Core\UIRender.cpp $(CURDIR)\Layout\UIChildLayout.cpp \
+	$(CURDIR)\Layout\UIHorizontalLayout.cpp $(CURDIR)\Layout\UITabLayout.cpp $(CURDIR)\Layout\UITileLayout.cpp \
+	$(CURDIR)\Layout\UIVerticalLayout.cpp $(CURDIR)\Utils\UIDelegate.cpp $(CURDIR)\Utils\Utils.cpp \
+	$(CURDIR)\Utils\WinImplBase.cpp
+DUILIB_C_SOURCES = 
+
+DUILIB_CPP_OBJECTS = $(DUILIB_CPP_SOURCES:.cpp=.obj)
+DUILIB_C_OBJECTS = $(DUILIB_C_SOURCES:.c=.obj)
+DUILIB_OBJECTS = $(DUILIB_CPP_OBJECTS) $(DUILIB_C_OBJECTS)
+
+
+all:$(CURDIR)\$(BASENAME).lib
+
+$(CURDIR)\$(BASENAME).lib: header_files $(TOPDIR)\clibs $(DUILIB_OBJECTS) compiles_cc
+	$(QUIETCMD)$(LIBEXE) /OUT:"$(CURDIR)\$(BASENAME).lib" $(DUILIB_FLAGS) $(DUILIB_OBJECTS) $(CURDIR)\Utils\XUnzip.obj  $(CURDIR)\Utils\stb_image.obj $(CURDIR)\stdafx.obj
+
+
+header_files:
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Yc"stdafx.h" /Fp$(CURDIR)\$(BASENAME).pch /Fo$(CURDIR)\stdafx.obj $(POST_CFLAGS) $(CURDIR)\stdafx.cpp
+
+compiles_cc:
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Fo"$(CURDIR)\Utils\XUnzip.obj" $(POST_CFLAGS) $(CURDIR)\Utils\XUnzip.cpp
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Fo"$(CURDIR)\Utils\stb_image.obj" /Fd"$(CURDIR)\$(BASENAME).pdb" /Gd /TC $(CURDIR)\Utils\stb_image.c
+
+.cpp.obj:
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Yu"stdafx.h" /Fp$(CURDIR)\$(BASENAME).pch /Fo"$@" $(POST_CFLAGS) $*.cpp
+
+$(TOPDIR)\clibs:
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR) && git clone https://github.com/jeppeter/clibs.git && popd
+
+clean:
+	$(QUIETCMD)del $(DUILIB_OBJECTS) 2>NUL >NUL || echo "" >NUL
+	$(QUIETCMD)del $(CURDIR)\$(BASENAME).lib $(CURDIR)\$(BASENAME).pdb 2>NUL >NUL || echo "" >NUL
+	$(QUIETCMD)del $(CURDIR)\Utils\stb_image.obj $(CURDIR)\Utils\XUnzip.obj 2>NUL >NUL || echo "" >NUL
+	$(QUIETCMD)del $(CURDIR)\$(BASENAME).pch $(CURDIR)\stdafx.obj 2>NUL >NUL || echo "" >NUL
