@@ -3,13 +3,11 @@ PATH=$(PATH);\nosuch
 
 all:check_env example\360SafeSetup.exe
 
-check_env:check_vs check_nsis check_git check_cmake
+check_env:check_vs check_nsis check_git
 
 check_vs:
 	@cscript //Nologo check_env.vbs visual_studio 10.0 2>>error.txt
 
-check_cmake:
-	@cscript //Nologo check_env.vbs cmake 3.8.0 2>>error.txt
 
 check_nsis:
 	@cscript //Nologo check_env.vbs nsis 3.0 2>>error.txt
@@ -20,33 +18,23 @@ check_git:
 example\360SafeSetup.exe:example\plugin\nsduilib.dll  example\360SafeSetup.nsi
 	@cd example &&  makensis 360SafeSetup.nsi && cd .. || cd ..
 
-example\plugin\nsduilib.dll:build\nsduilib\Release\nsduilib.dll
+example\plugin\nsduilib.dll:src\nsduilib\nsduilib.dll
 	@ mkdir example\plugin 2>NUL || echo ""
-	@ copy /Y build\nsduilib\Release\nsduilib.dll example\plugin\nsduilib.dll
-
-build\nsduilib\Release\nsduilib.dll:build\nsduilib.sln
-	@cscript //Nologo runcompile.vbs -s build\nsduilib.sln -t "Release|Win32" "amd64_x86"
-
-build\nsduilib.sln:src\winlib\CMakelists.txt
-	@mkdir build  || echo "build already exist"
-	@(cd build && cmake ..\src && cd ..) 
-	@cscript //Nologo change_precomp.vbs build\duilib\duilib.vcxproj
-
-src\winlib\CMakelists.txt:src\winlib src\fakewinlib\CMakelists.txt
-	@(copy src\fakewinlib\CMakelists.txt src\winlib)
-
-src\winlib:clibs\winlib
-	@mkdir src\winlib || echo "" >NUL
-	@(xcopy /E /Y clibs\winlib src\winlib) || echo "" >NUL
+	@ copy /Y $** example\plugin\nsduilib.dll
 
 
+src\nsduilib\nsduilib.dll:
+	@ pushd . && cd src\nsduilib && nmake /f makefile.win all && popd
 
-clibs\winlib:clibs
+
+clean_nsduilib:
+	@ pushd . && cd src\nsduilib && nmake /f makefile.win clean && popd
+
 
 clibs:
 	@git clone https://github.com/jeppeter/clibs.git
 
-clean:
+clean:clean_nsduilib
 	@ rmdir /s /q src\winlib 2>NUL || echo "" >NUL
 	@ rmdir /s /q build 2>NUL || echo "" >NUL
 	@ del example\plugin\nsduilib.dll 2>NUL

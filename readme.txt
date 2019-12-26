@@ -10,7 +10,6 @@
 
 依赖条件：
  visual studio 2013或更新的版本 (已经支持visual studio 2017)
- cmake 3.8.0 或更新的版本
  nsis 3.0.2 或更新的版本
  git 2.0 或更新的版本
 
@@ -23,3 +22,4 @@ TBCIA团队出品
 
 历史记录：
 2017.11.16  增加了处理shortname变成longname的模式，参见InitTBCIASkinEngine
+2019.12.26  对程序去除了cmake的依赖，使用cl.exe link.exe来直接编译

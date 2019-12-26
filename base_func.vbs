@@ -183,18 +183,21 @@ Function GetRunOut(exefile,commands,ByRef filterfunc,ByRef filterctx)
     set objshell = WScript.CreateObject("WScript.Shell")
     set execobj = objshell.Exec(cmd)
     retline = ""
+    retval=false
     Do While Not execobj.Stdout.AtEndOfStream
         line = execobj.Stdout.ReadLine()
 
-        Execute("retval = " & filterfunc & "(line," & filterctx & ")")      
-        If not retval Then
-            retline = retline & line & chr(13) & chr(10)
-        Else
-        	Exit Do
+        if not retval Then
+	        Execute("retval = " & filterfunc & "(line," & filterctx & ")")      
         End If
     Loop
+    if not retval Then
+    	line = execobj.Stdout.ReadLine()
+    	Execute("retval = " & filterfunc & "(line," & filterctx & ")")
+    End If
     GetRunOut=retline
 End Function
+
 
 Function StrHasChar(instr,ch)
 	dim xlen

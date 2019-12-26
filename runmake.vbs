@@ -63,6 +63,9 @@ Function ParseArgs(args)
 	max = Ubound(args)
 	set argobj = new DictObject
 	argobj.Add "vcmode","amd64"
+	If not IsNull(GetEnv("VC_SETVAR_ARCH")) Then
+		argobj.Add "vcmode",GetEnv("VC_SETVAR_ARCH")
+	End If
 	argobj.Add "novc",False
 	argobj.Add "reserve",False
 	i = 0
@@ -101,10 +104,10 @@ Function ParseArgs(args)
 				Usage 3,args(i) & " need arg"
 			End If
 			If args(i+1) = "amd64" or args(i+1) = "x86" or _
-				args(i+1) = "x86_amd64" or args(i+1) = "x86_arm" or args(i+1) = "x64" Then
+				args(i+1) = "x86_amd64" or args(i+1) = "x86_arm" or args(i+1) = "x64" or args(i+1) = "amd64_x86" Then
 				argobj.Add "vcmode",args(i+1)
 			Else
-				Usage 5,args(i) & " not in [amd64|x86|x86_arm|x86_amd64|x64]"
+				Usage 5,args(i) & " not in [amd64|x86|x86_arm|x86_amd64|x64|amd64_x86]"
 			End If
 			i = i + 1
 		Elseif args(i) = "-N" or args(i) = "--novc" Then

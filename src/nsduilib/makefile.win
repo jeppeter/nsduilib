@@ -1,0 +1,107 @@
+CURDIR=$(MAKEDIR)
+TOPDIR=$(CURDIR)\..\..
+BASENAME=nsduilib
+
+
+
+!IFDEF UNICODE_MODE
+!IF $(UNICODE_MODE) != 0
+UNICODE_CFLAGS=/D UNICODE /D _UNICODE
+!ELSE
+UNICODE_CFLAGS=
+!ENDIF
+!ELSE
+UNICODE_CFLAGS=
+!ENDIF
+
+!IFDEF MAKEVERBOSE
+!IF $(MAKEVERBOSE) != 0
+
+QUIETCMD=
+NOLOGO_CFLAGS=
+NOLOGO_LDFLAGS=
+NOLOGO_ARFLAGS=
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=
+
+!ELSE
+
+QUIETCMD=@
+NOLOGO_CFLAGS=/nologo
+NOLOGO_LDFLAGS=/nologo
+NOLOGO_ARFLAGS=/nologo
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=/nologo
+
+!ENDIF
+
+!ELSE
+QUIETCMD=@
+NOLOGO_CFLAGS=/nologo
+NOLOGO_LDFLAGS=/nologo
+NOLOGO_ARFLAGS=/nologo
+VERBOSE_SOURCES=
+NOLOGO_MAKEFLAGS=/nologo
+
+!ENDIF
+
+!IF  "$(INST_ARCH)" == "x64"
+ARCH_LIBFLAGS=/MACHINE:X64
+!ELSE
+ARCH_LIBFLAGS=/MACHINE:X86 /SAFESEH  /machine:X86
+!ENDIF
+
+
+
+CC=cl.exe
+LINK=link.exe
+
+INCLUDE_CFLAGS=/I$(TOPDIR)\clibs\winlib /I$(TOPDIR)\src\duilib /I$(MAKEDIR)
+PRE_CFLAGS=/c $(INCLUDE_CFLAGS) $(NOLOGO_CFLAGS) /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D _WINDOWS /D NDEBUG $(UNICODE_CFLAGS) /D UILIB_STATIC /D NSDUILIB_EXPORTS /D _WINDLL /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR  
+
+POST_CFLAGS=/Fd"$(CURDIR)\$(BASENAME).pdb" /Gd /TP
+
+NSDUILIB_LD_LIBS=Shlwapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+
+NSDUILIB_PRE_LDFLAGS=/ERRORREPORT:PROMPT /INCREMENTAL:NO $(NOLOGO_LDFLAGS)
+NSDUILIB_POST_LDFLAGS=$(NSDUILIB_LD_LIBS) /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:$(VCINSTALLDIR)Include\Manifest\dpiaware.manifest /PDB:"$(CURDIR)\$(BASENAME).pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"$(CURDIR)\nsduilib.lib" $(ARCH_LIBFLAGS) /DLL 
+NSDUILIB_CPP_SOURCES = $(CURDIR)\dllmain.cpp $(CURDIR)\nsduilib.cpp $(CURDIR)\SkinEngine.cpp $(CURDIR)\StdAfx.cpp
+NSDUILIB_C_SOURCES =  $(CURDIR)\pluginapi.c
+
+NSDUILIB_CPP_OBJECTS = $(NSDUILIB_CPP_SOURCES:.cpp=.obj)
+NSDUILIB_C_OBJECTS = $(NSDUILIB_C_SOURCES:.c=.obj)
+NSDUILIB_OBJECTS = $(NSDUILIB_CPP_OBJECTS) $(NSDUILIB_C_OBJECTS)
+
+
+all:$(CURDIR)\$(BASENAME).dll
+
+$(CURDIR)\$(BASENAME).dll: $(TOPDIR)\clibs\staticlib\winlib.lib $(TOPDIR)\src\duilib\duilib.lib $(NSDUILIB_OBJECTS)
+	$(QUIETCMD)$(LINK) $(NSDUILIB_PRE_LDFLAGS) /OUT:"$(CURDIR)\$(BASENAME).dll" $(NSDUILIB_POST_LDFLAGS) $(TOPDIR)\clibs\staticlib\winlib.lib $(TOPDIR)\src\duilib\duilib.lib $(NSDUILIB_OBJECTS)
+
+
+
+.cpp.obj:
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Fo"$@" $(POST_CFLAGS) $*.cpp
+
+.c.obj:
+	$(QUIETCMD)$(CC) $(PRE_CFLAGS) /Fo"$@" /Fd"$(CURDIR)\$(BASENAME).pdb" /Gd /TC $*.c
+
+$(TOPDIR)\clibs\staticlib\winlib.lib:$(TOPDIR)\clibs
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR)\clibs && nmake $(NOLOGO_MAKEFLAGS) STATICLIB=1 /f makefile.win all && popd
+
+$(TOPDIR)\src\duilib\duilib.lib:
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR)\src\duilib && nmake $(NOLOGO_MAKEFLAGS) /f makefile.win all && popd
+
+$(TOPDIR)\clibs:
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR) && git clone https://github.com/jeppeter/clibs.git && popd
+
+clean_clibs:$(TOPDIR)\clibs
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR)\clibs && nmake $(NOLOGO_MAKEFLAGS) STATICLIB=1 /f makefile.win clean && popd
+
+clean_duilib:
+	$(QUIETCMD)pushd $(MAKEDIR) && cd $(TOPDIR)\src\duilib && nmake $(NOLOGO_MAKEFLAGS) /f makefile.win clean && popd
+
+clean:clean_clibs clean_duilib
+	$(QUIETCMD)del $(NSDUILIB_OBJECTS) 2>NUL >NUL || echo "" >NUL
+	$(QUIETCMD)del $(CURDIR)\$(BASENAME).lib $(CURDIR)\$(BASENAME).pdb $(CURDIR)\$(BASENAME).dll 2>NUL >NUL || echo "" >NUL
+	$(QUIETCMD)del $(CURDIR)\$(BASENAME).exp 2>NUL >NUL || echo "" >NUL
