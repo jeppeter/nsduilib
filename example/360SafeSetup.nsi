@@ -155,20 +155,26 @@ Function 360Safe
       !insertmacro DEBUG_INFO "can not init install.png"
        Call AbortFunction
    ${EndIf}
+   !insertmacro DEBUG_INFO "load install.png"
 
    ;全局按钮绑定函数
    ;最小化按钮绑定函数
    !insertmacro BindControlFunction "Wizard_MinBtn" "OnGlobalMinFunc"
+   !insertmacro DEBUG_INFO "Wizard_MinBtn"
    !insertmacro BindControlFunction "Wizard_CloseBtn" "OnGlobalCancelFunc"
+   
+   !insertmacro DEBUG_INFO "Wizard_CloseBtn"
 
    ;----------------------------第一个页面-----------------------------------------------
    ; 显示licence
    !insertmacro ShowLicense "LicenceRichEdit" "$temp\${PRODUCT_NAME_EN}Setup\res\Licence.txt"
+   !insertmacro DEBUG_INFO "Licence"
 
    ;下一步按钮绑定函数
    !insertmacro BindControlFunction "Wizard_NextBtn4Page1" "OnNextBtnFunc"
    ;取消按钮绑定函数
    !insertmacro BindControlFunction "Wizard_CancelBtn4Page1" "OnGlobalCancelFunc"
+   !insertmacro DEBUG_INFO "Wizard_CancelBtn4Page1"
    
    ;----------------------------第二个页面-----------------------------------------------
    ;安装路径编辑框设定数据
@@ -188,7 +194,7 @@ Function 360Safe
 	nsduilib::SetControlData "Wizard_StartInstallBtn4Page2" "覆盖" "text"
    ${EndIf}
 
-   
+   !insertmacro DEBUG_INFO "Wizard_StartInstallBtn4Page2"
    ;可用磁盘空间设定数据
    !insertmacro SetControlText "Wizard_UsableSpaceLab4Page2" "$FreeSpaceSize"
 
@@ -220,7 +226,7 @@ Function 360Safe
 	nsduilib::TBCIACreatTimer $timerID 2000  ;callback interval        
    ${EndIf}   
 
-      !insertmacro DEBUG_INFO ""
+      !insertmacro DEBUG_INFO "cc"
      
    ;----------------------------第四个页面-----------------------------------------------  
 
@@ -238,7 +244,7 @@ Function 360Safe
       !insertmacro DEBUG_INFO " will abort"
       Call AbortFunction
    ${EndIF}
-
+	
 FunctionEnd
 
 Function un.AbortFunction

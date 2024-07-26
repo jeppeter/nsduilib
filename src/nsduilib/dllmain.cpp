@@ -48,16 +48,85 @@
 
 #include <Windows.h>
 #include <win_output_debug.h>
+#include <win_output_debug_cfg.h>
 
 HINSTANCE g_hInstance;
+
+int init_dll_debug(int loglvl)
+{
+    int ret;
+    OutputCfg cfgs;
+    OutfileCfg* pcfg = NULL;
+
+
+    pcfg = new OutfileCfg();
+    ret = pcfg->set_file_type(NULL, WINLIB_DEBUGOUT_FILE_BACKGROUND, 0, 0);
+    if (ret < 0) {
+        GETERRNO(ret);
+        goto fail;
+    }
+
+    ret = pcfg->set_level(loglvl);
+    if (ret < 0) {
+        GETERRNO(ret);
+        goto fail;
+    }
+
+    ret = pcfg->set_format(WINLIB_OUTPUT_ALL_MASK);
+    if (ret < 0) {
+        GETERRNO(ret);
+        goto fail;
+    }
+
+    ret = cfgs.insert_config(*pcfg);
+    if (ret < 0) {
+        GETERRNO(ret);
+        goto fail;
+    }
+
+    delete pcfg;
+    pcfg = NULL;
+
+
+    ret = InitOutputEx2(&cfgs);
+    if (ret < 0) {
+        GETERRNO(ret);
+        goto fail;
+    }
+
+    DEBUG_INFO("init level [%d]",loglvl);
+
+    return 0;
+fail:
+    if (pcfg) {
+        delete pcfg;
+    }
+    pcfg = NULL;
+    INIT_LOG(loglvl);
+    ERROR_INFO("fail init error[%d]", ret);
+    SETERRNO(ret);
+    return ret;
+}
+
+int nsduilib_debug_init()
+{
+	char* valstr = NULL;
+	int outlevel = 0;
+
+	valstr = getenv("NSDUILIB_LEVEL");
+	if (valstr == NULL) {
+		return 0;
+	}
+	outlevel = atoi(valstr);
+	return init_dll_debug(outlevel);
+}
 
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	g_hInstance = (HINSTANCE) hInst;
- #ifdef _DEBUG
- 	if (ul_reason_for_call == DLL_PROCESS_ATTACH)
- 		MessageBox( 0, 0, 0, 0 );
- #endif
+ 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+ 		nsduilib_debug_init();
+ 	}
 
     return TRUE;
 }

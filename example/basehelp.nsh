@@ -13,7 +13,7 @@ Function GetWindowsVersion
 
    IfErrors 0 lbl_winnt
 
-   ; ≤ª « NT
+   ; ‰∏çÊòØ NT
    ReadRegStr $R0 HKLM \
    "SOFTWARE\Microsoft\Windows\CurrentVersion" VersionNumber
 

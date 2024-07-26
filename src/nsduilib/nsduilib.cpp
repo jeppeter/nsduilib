@@ -129,10 +129,17 @@ fail:
 NSDUILIB_API void FindControl(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra)
 {
     TCHAR controlName[MAX_PATH];
+    char* ansicontrolName= NULL;
+    int ansisize = 0;
     ZeroMemory(controlName, MAX_PATH * sizeof(TCHAR));
     EXDLL_INIT();
 
     popstring( controlName, sizeof(controlName));
+    if (TcharToAnsi(controlName,&ansicontrolName,&ansisize) >= 0) {
+        DEBUG_INFO("controlName [%s]",ansicontrolName);
+        TcharToAnsi(NULL,&ansicontrolName,&ansisize);
+    }
+    DEBUG_BUFFER_FMT(controlName,sizeof(controlName),"controlName value");
     CControlUI* pControl = static_cast<CControlUI*>(g_pFrame->GetPaintManager().FindControl( controlName ));
     if ( pControl == NULL ) {
         pushint( - 1 );

@@ -9,18 +9,21 @@
 !define __set_error_${__MACRO__} `__set_error_${__MACRO__}_${__FILE__}_${__LINE__}`
 !define __set_ok_${__MACRO__} `__set_ok_${__MACRO__}_${__FILE__}_${__LINE__}`
 	
+	!insertmacro DEBUG_INFO "Find [${_ctlname}]"
 	push $R1
 	nsduilib::FindControl "${_ctlname}"
 	pop $R1
+	!insertmacro DEBUG_INFO "find ${_ctlname} r1 [$R1]"
 
 	${If} $R1 == "-1"
 		push ""
 		push "${_ctlname}"
-		push "无法找到控件(%s)"
+		push "鏃犳硶鎵惧埌鎺т欢(%s)"
 		!insertmacro FormatString $R1
 		!insertmacro AbortMessage $R1
 		goto ${__set_error_${__MACRO__}}
 	${EndIf}
+	!insertmacro DEBUG_INFO "${_ctlname} exist"
 	goto ${__set_ok_${__MACRO__}}
 
 ${__set_ok_${__MACRO__}}:
@@ -46,6 +49,7 @@ ${__macro_exit_${__MACRO__}}:
 
 
 	push $0
+	!insertmacro DEBUG_INFO "ExistControl [${_ctlname}]"
 
 	!insertmacro ExistControl "${_ctlname}"
 
@@ -53,8 +57,10 @@ ${__macro_exit_${__MACRO__}}:
 		goto ${__set_error_${__MACRO__}}
 	${EndIf}
 
+	!insertmacro DEBUG_INFO "will GetFunctionAddress"
 	GetFunctionAddress $0 "${_fnname}"
 	nsduilib::OnControlBindNSISScript "${_ctlname}" $0
+	!insertmacro DEBUG_INFO "will set_ok"
 	goto ${__set_ok_${__MACRO__}}
 
 ${__set_ok_${__MACRO__}}:
@@ -87,7 +93,7 @@ ${__macro_exit_${__MACRO__}}:
 	${If} $R0 <> "0"
 		push ""
 		push "${_licfile}"
-		push "无法找到授权文件(%s)"
+		push "鏃犳硶鎵惧埌鎺堟潈鏂囦欢(%s)"
 		!insertmacro FormatString $R0
 		!insertmacro AbortMessage $R0
 		goto ${__set_error_${__MACRO__}}
