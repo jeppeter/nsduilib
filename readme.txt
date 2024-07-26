@@ -21,5 +21,6 @@ TBCIA团队出品
 联系方式: jeppeter@gmail.com
 
 历史记录：
+2024.7.26   这里增加了一个编译选项NSDUILIB_UNICODE_STRING 在文件plugin.c 中，这里如果是 NSDUILIB_UNICODE_STRING== 1表示支持3.08版本以后的，而NSDUILIB_UNICODE_STRING == 0 表示支持3.08版本以前的，在plugins目录下nsduilibw.dll表示是支持3.08版本以后的 nsduiliba.dll表示3.08版本以前的
 2017.11.16  增加了处理shortname变成longname的模式，参见InitTBCIASkinEngine
 2019.12.26  对程序去除了cmake的依赖，使用cl.exe link.exe来直接编译
